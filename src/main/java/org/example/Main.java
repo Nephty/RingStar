@@ -42,19 +42,20 @@ public class Main {
 
 
     /**
-     * Calcule le coût d'une solution en faisant <br>
-     * Somme des coûts des chemins entre les noeuds du ring  + somme des chemins entre les noeuds du star.
+     * Calcule le coût d'une solution en faisan la somme des coûts des chemins entre les noeuds du ring
+     * + somme des chemins entre les noeuds du star.
      *
-     * @param ringCost Matrice des côuts pour laler de i à j dans le ring
+     * @param ringCost Matrice des côuts pour aller de i à j dans le ring
      * @param starCost Matrice des coûts pour aller de i à j dans star
      * @param ring     Noeuds du ring
+     * @param starOrdered matrice 2D de tuple (value, j) qui sont les couts des
+     *                   chemins d'un noeud i vers un noeud j de cout value
      * @param size     Taille du problème
      * @return Le coùt de la solution
      */
     public static int calculateSolution(int[][] ringCost, int[][] starCost, int[] ring,
                                         ArrayList<ArrayList<Tuple>> starOrdered, int size) {
         int cost = 0;
-
 
         for (int i = 0; i < ring.length; i++) {
             cost += ringCost[ring[i] - 1][ring[(i + 1) % ring.length] - 1];
@@ -74,16 +75,16 @@ public class Main {
 
     /**
      * Calcule le meilleur dépot pour chaque noeud du star. <br>
-     * En gros, il va prendre chaque noeud du star, parcourir sa colonne de la matrice et la ligne où sera le minimum
-     * sera le meilleur depot pour lui. <br>
-     * <p>
-     * Pour le moment c'est fait de façon naïve, il faudra optimiser ça.
+     * En gros, il va prendre chaque noeud du star, va chercher sa ligne dans starCostOrdered
+     * et va chercher le premier noeud du ring qui est dans cette ligne qui sera le meilleur dépot car la liste est triée.
      *
-     * @param starCost la matrice des couts pour aller de i à j dans le star. avec les lignes triées en fonctions des coùts croissants
+     * @param starCostOrdered la matrice des couts pour aller de i à j dans le star. avec les lignes triées en fonctions des coùts croissants
      *                 (pour trouver plus rapidement le minimum).
      * @param ring     Les noeuds du ring.
+     * @param size     La taille du problème.
+     * @return Une liste de tuple (i, j) qui sont les noeuds du star et leur meilleur dépot.
      */
-    public static ArrayList<Integer[]> getStarSolution(ArrayList<ArrayList<Tuple>> starCost, int[] ring, int size) {
+    public static ArrayList<Integer[]> getStarSolution(ArrayList<ArrayList<Tuple>> starCostOrdered, int[] ring, int size) {
         boolean[] ringNodes = new boolean[size];
         for (int i = 0; i < ring.length; i++) {
             ringNodes[ring[i] - 1] = true;
@@ -94,13 +95,13 @@ public class Main {
                 boolean found = false;
                 int j = 0;
                 while (!found) {
-                    if (ringNodes[starCost.get(i).get(j).getIndex()]) {
+                    if (ringNodes[starCostOrdered.get(i).get(j).getIndex()]) {
                         found = true;
                     } else {
                         j++;
                     }
                 }
-                res.add(new Integer[]{i + 1, starCost.get(i).get(j).getIndex() + 1});
+                res.add(new Integer[]{i + 1, starCostOrdered.get(i).get(j).getIndex() + 1});
             }
         }
         return res;
