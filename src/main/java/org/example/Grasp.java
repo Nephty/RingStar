@@ -1,4 +1,4 @@
-package grasp;
+package org.example;
 
 import org.example.Solution;
 
