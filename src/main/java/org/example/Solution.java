@@ -1,9 +1,11 @@
 package org.example;
 
+import java.util.ArrayList;
+
 public class Solution {
-    private int[] ring;
-    private int[][] star;
-    public Solution(int[] ring, int[][] star) {
+    private ArrayList<Integer> ring;
+    private ArrayList<Integer[]> star;
+    public Solution(ArrayList<Integer> ring, ArrayList<Integer[]> star) {
         this.ring = ring;
         this.star = star;
     }
@@ -12,19 +14,19 @@ public class Solution {
         return 0;
     }
 
-    public int[] getRing() {
+    public ArrayList<Integer> getRing() {
         return ring;
     }
 
-    public void setRing(int[] ring) {
+    public void setRing(ArrayList<Integer> ring) {
         this.ring = ring;
     }
 
-    public int[][] getStar() {
+    public ArrayList<Integer[]> getStar() {
         return star;
     }
 
-    public void setStar(int[][] star) {
+    public void setStar(ArrayList<Integer[]> star) {
         this.star = star;
     }
 }
