@@ -1,27 +1,133 @@
 package org.example;
 
-import org.example.thomas.RandomShit;
-
-import java.io.FileNotFoundException;
-import java.util.Random;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        MatrixReader mr = new MatrixReader("src/main/resources/data1.dat" /*+ args[0]*/);
-        try{
-            mr.matrixRead();
-        }catch (FileNotFoundException e){
-            e.getMessage();
+        int[][] starCost = {{0, 4, 8, 4, 8, 12, 8, 12, 16},
+                {4, 0, 1, 8, 4, 1, 12, 8, 12},
+                {8, 1, 0, 12, 8, 4, 16, 12, 8},
+                {4, 8, 12, 0, 4, 8, 1, 8, 12},
+                {8, 4, 8, 4, 0, 4, 8, 1, 1},
+                {12, 1, 4, 8, 4, 0, 12, 8, 4},
+                {8, 12, 16, 1, 8, 12, 0, 4, 8},
+                {12, 8, 12, 8, 1, 8, 4, 0, 4},
+                {16, 12, 8, 12, 1, 4, 8, 4, 0}};
+
+        int[][] ringCost = {{0, 1, 6, 1, 2, 9, 6, 9, 12},
+                {1, 0, 3, 2, 1, 3, 9, 6, 9},
+                {6, 3, 0, 9, 6, 3, 12, 9, 6},
+                {1, 2, 9, 0, 1, 6, 3, 6, 9},
+                {2, 1, 6, 1, 0, 3, 6, 3, 6},
+                {9, 3, 3, 6, 3, 0, 9, 6, 3},
+                {6, 9, 12, 3, 6, 9, 0, 1, 6},
+                {9, 6, 9, 6, 3, 6, 1, 0, 3},
+                {12, 9, 6, 9, 6, 3, 6, 3, 0}};
+
+        int size = 9;
+        int[] ring = {4, 5, 2, 1};
+
+        ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, size);
+
+        ArrayList<Integer[]> res = getStarSolution(starOrdered, ring, size);
+        for (Integer[] i : res) {
+            System.out.println(Arrays.toString(i));
         }
 
-        // Choisir le solver à appeler
-        //RandomShit solver = new RandomShit(mr);
-
-        //Solution solution = solver.solve(mr.ringCost, mr.starCost, mr.length_of_matrix);
-
+        System.out.println("Total cost: " + calculateSolution(ringCost, starCost, ring, starOrdered, size)
+                + ". Expected: 9");
     }
 
 
+    /**
+     * Calcule le coût d'une solution en faisan la somme des coûts des chemins entre les noeuds du ring
+     * + somme des chemins entre les noeuds du star.
+     *
+     * @param ringCost Matrice des côuts pour aller de i à j dans le ring
+     * @param starCost Matrice des coûts pour aller de i à j dans star
+     * @param ring     Noeuds du ring
+     * @param starOrdered matrice 2D de tuple (value, j) qui sont les couts des
+     *                   chemins d'un noeud i vers un noeud j de cout value
+     * @param size     Taille du problème
+     * @return Le coùt de la solution
+     */
+    public static int calculateSolution(int[][] ringCost, int[][] starCost, int[] ring,
+                                        ArrayList<ArrayList<Tuple>> starOrdered, int size) {
+        int cost = 0;
+
+        for (int i = 0; i < ring.length; i++) {
+            cost += ringCost[ring[i] - 1][ring[(i + 1) % ring.length] - 1];
+            // System.out.println("Ring cost ("+i+","+(i + 1) % ring.length+"): "
+            //       + ringCost[ring[i]-1][ring[(i + 1) % ring.length]-1]);
+        }
+
+        ArrayList<Integer[]> starSolution = getStarSolution(starOrdered, ring, size);
+        for (Integer[] i : starSolution) {
+            cost += starCost[i[0] - 1][i[1] - 1];
+            // System.out.println("Star cost ("+i[0]+","+i[1]+"): " + starCost[i[0]-1][i[1]-1]);
+        }
+
+        return cost;
+    }
 
 
+    /**
+     * Calcule le meilleur dépot pour chaque noeud du star. <br>
+     * En gros, il va prendre chaque noeud du star, va chercher sa ligne dans starCostOrdered
+     * et va chercher le premier noeud du ring qui est dans cette ligne qui sera le meilleur dépot car la liste est triée.
+     *
+     * @param starCostOrdered la matrice des couts pour aller de i à j dans le star. avec les lignes triées en fonctions des coùts croissants
+     *                 (pour trouver plus rapidement le minimum).
+     * @param ring     Les noeuds du ring.
+     * @param size     La taille du problème.
+     * @return Une liste de tuple (i, j) qui sont les noeuds du star et leur meilleur dépot.
+     */
+    public static ArrayList<Integer[]> getStarSolution(ArrayList<ArrayList<Tuple>> starCostOrdered, int[] ring, int size) {
+        boolean[] ringNodes = new boolean[size];
+        for (int i = 0; i < ring.length; i++) {
+            ringNodes[ring[i] - 1] = true;
+        }
+        ArrayList<Integer[]> res = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            if (!ringNodes[i]) {
+                boolean found = false;
+                int j = 0;
+                while (!found) {
+                    if (ringNodes[starCostOrdered.get(i).get(j).getIndex()]) {
+                        found = true;
+                    } else {
+                        j++;
+                    }
+                }
+                res.add(new Integer[]{i + 1, starCostOrdered.get(i).get(j).getIndex() + 1});
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * Méthode qui va créer un nouveau tableau de tuple qui sont les couts des chemins d'un noeud i vers un noeud j dans le star.
+     * Les lignes seront ordonnées afin de pouvoir itérer dessus plus facilement. <br>
+     * <p>
+     * Les matrices sont symétriques donc on la transposée reste la même (inverse iigne et colonne) on peut donc itérer sur les lignes.
+     *
+     * @param starCost La matrice des couts pour aller de i à j dans le star.
+     * @param size     La taille du star.
+     * @return Une matrice 2D de tuple (value, j) qui sont les couts des chemins d'un noeud i vers un noeud j de cout value
+     */
+    public static ArrayList<ArrayList<Tuple>> setupStarOrdered(int[][] starCost, int size) {
+        ArrayList<ArrayList<Tuple>> res = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            ArrayList<Tuple> tmp = new ArrayList<>();
+            for (int j = 0; j < size; j++) {
+                tmp.add(new Tuple(j, starCost[i][j]));
+            }
+            tmp.sort(Tuple::compareTo);
+            res.add(tmp);
+        }
+        return res;
+    }
 }
