@@ -10,8 +10,23 @@ public class Solution {
         this.star = star;
     }
 
-    public int cost() {
-        return 0;
+    public int getCost(Solution solution, int[][] ringCosts, int[][] starCosts) {
+        int i = 0;
+        int totalCost = 0;
+        ArrayList<Integer> ring = solution.getRing();
+        ArrayList<Integer[]> star = solution.getStar();
+
+        while (i < ring.size()){
+            totalCost += ringCosts[ring.get(i) - 1][ring.get(i+1) - 1];
+            i ++;
+        }
+        for (Integer[] integers : star) {
+            int starNode = integers[0];
+            int destNode = integers[1];
+            totalCost += starCosts[starNode - 1][destNode - 1];
+        }
+
+        return totalCost;
     }
 
     public ArrayList<Integer> getRing() {

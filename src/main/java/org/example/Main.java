@@ -42,7 +42,7 @@ public class Main {
 
 
     /**
-     * Calcule le coût d'une solution en faisan la somme des coûts des chemins entre les noeuds du ring
+     * Calcule le coût d'une solution en faisant la somme des coûts des chemins entre les noeuds du ring
      * + somme des chemins entre les noeuds du star.
      *
      * @param ringCost Matrice des côuts pour aller de i à j dans le ring
@@ -109,7 +109,7 @@ public class Main {
 
 
     /**
-     * Méthode qui va créer un nouveau tableau de tuple qui sont les couts des chemins d'un noeud i vers un noeud j dans le star.
+     * Méthode qui va créer un nouveau tableau de tuple qui sont les coûts des chemins d'un noeud i vers un noeud j dans le star.
      * Les lignes seront ordonnées afin de pouvoir itérer dessus plus facilement. <br>
      * <p>
      * Les matrices sont symétriques donc on la transposée reste la même (inverse iigne et colonne) on peut donc itérer sur les lignes.
