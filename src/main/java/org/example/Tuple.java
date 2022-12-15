@@ -1,43 +1,35 @@
 package org.example;
 
-public class Tuple {
-    private int index;
-    private int value;
+public class Tuple<T extends Comparable<T>> implements Comparable<Tuple<T>> {
+    private T a;
+    private T b;
 
-    public Tuple(int index, int value){
-        this.index = index;
-        this.value = value;
+    public Tuple(T a, T b) {
+        this.a = a;
+        this.b = b;
     }
 
-    public int getIndex(){
-        return this.index;
+    public T getA() {
+        return this.a;
     }
 
-    public int getValue(){
-        return this.value;
+    public T getB() {
+        return this.b;
     }
 
-    public void setIndex(int index){
-        this.index = index;
+    public void setA(T a) {
+        this.a = a;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setB(T b) {
+        this.b = b;
     }
 
-    public String toString(){
-        return "index: " + this.index + " value: " + this.value;
+    public String toString() {
+        return "index: " + this.a + " value: " + this.b;
     }
 
-    public int compareTo(Tuple t){
-        if(this.value < t.value){
-            return -1;
-        }
-        else if(this.value > t.value){
-            return 1;
-        }
-        else{
-            return 0;
-        }
+    public int compareTo(Tuple<T> t) {
+        return this.b.compareTo(t.getB());
     }
 }

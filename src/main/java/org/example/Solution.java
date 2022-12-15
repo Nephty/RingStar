@@ -1,7 +1,6 @@
 package org.example;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Solution {
@@ -9,34 +8,26 @@ public class Solution {
 
     private ArrayList<Integer[]> star;
 
-    private final boolean[] isRing;
+    private final boolean[] isRing = new boolean[Main.size];
     private int cost = -1;
 
-    private final Grasp GRASP;
-
-    public Solution(ArrayList<Integer> ring, Grasp grasp) {
+    public Solution(ArrayList<Integer> ring) {
         this.ring = ring;
-        this.GRASP = grasp;
-        isRing = new boolean[GRASP.SIZE];
         for (Integer node : ring) {
-            isRing[node] = true;
+            isRing[node - 1] = true;
         }
     }
 
-    public Solution(Grasp grasp) {
+    public Solution() {
         this.ring = new ArrayList<>(List.of(1));
-        this.GRASP = grasp;
-        isRing = new boolean[GRASP.SIZE];
         isRing[0] = true;
-        this.cost = Main.calculateSolution(ring); // WHAT ???
+        this.cost = Main.calculateSolution(ring);
     }
 
-    public Solution(Solution solution, Grasp grasp) {
+    public Solution(Solution solution) {
         this.ring = new ArrayList<>(solution.getRing());
-        this.GRASP = grasp;
-        isRing = new boolean[GRASP.SIZE];
         for (Integer node : ring) {
-            isRing[node] = true;
+            isRing[node - 1] = true;
         }
     }
 
@@ -44,47 +35,48 @@ public class Solution {
         this.cost = 0;
 
         for (int i = 0; i < ring.size(); i++) {
-            this.cost += GRASP.getRingCost()[ring.get(i) - 1][ring.get((i + 1) % ring.size()) - 1];
+            this.cost += Main.ringCost[ring.get(i) - 1][ring.get((i + 1) % ring.size()) - 1];
         }
 
         ArrayList<Integer[]> starSolution = getStar();
         for (Integer[] i : starSolution) {
-            this.cost += GRASP.getStarCost()[i[0] - 1][i[1] - 1];
+            this.cost += Main.starCost[i[0] - 1][i[1] - 1];
             // System.out.println("Star cost ("+i[0]+","+i[1]+"): " + starCost[i[0]-1][i[1]-1]);
         }
     }
+
     private void calculateStarSolution() {
-        boolean[] ringNodes = new boolean[GRASP.SIZE];
-        for (int i = 0; i < ring.size(); i++) {
-            ringNodes[ring.get(i) - 1] = true;
+        boolean[] ringNodes = new boolean[Main.size];
+        for (Integer integer : ring) {
+            ringNodes[integer - 1] = true;
         }
         ArrayList<Integer[]> res = new ArrayList<>();
-        for (int i = 0; i < GRASP.SIZE; i++) {
+        for (int i = 0; i < Main.size; i++) {
             if (!ringNodes[i]) {
                 boolean found = false;
                 int j = 0;
                 while (!found) {
-                    if (ringNodes[GRASP.getStarOrdered().get(i).get(j).getIndex()]) {
+                    if (ringNodes[Main.starOrdered.get(i).get(j).getA()]) {
                         found = true;
                     } else {
                         j++;
                     }
                 }
-                res.add(new Integer[]{i + 1, GRASP.getStarOrdered().get(i).get(j).getIndex() + 1});
+                res.add(new Integer[]{i + 1, Main.starOrdered.get(i).get(j).getA() + 1});
             }
         }
         this.star = res;
     }
 
     public int getCost() {
-        if(cost == -1) {
+        if (cost == -1) {
             calculateCost();
         }
         return cost;
     }
 
     public int getRingEdgeCost(int nodeA, int nodeB) {
-        return GRASP.getRingCost()[nodeA - 1][nodeB - 1];
+        return Main.ringCost[nodeA - 1][nodeB - 1];
     }
 
     public boolean isNodeRing(int node) {
@@ -94,7 +86,7 @@ public class Solution {
     public void setRing(ArrayList<Integer> ring) {
         this.ring = ring;
         for (Integer node : ring) {
-            isRing[node] = true;
+            isRing[node - 1] = true;
         }
         this.cost = Main.calculateSolution(ring);
     }
@@ -112,30 +104,31 @@ public class Solution {
     }
 
     public ArrayList<Integer[]> getStar() {
-        if(this.star == null){
+        if (this.star == null) {
             calculateStarSolution();
         }
         return star;
     }
+
     //-----------------------------------------------------------------------------------------//
     //NeighbourHood methods
     public Solution[] addNodeNeighbourhood() {
-        Solution[] neighbourhood = new Solution[GRASP.SIZE - ring.size()];
+        Solution[] neighbourhood = new Solution[Main.size - ring.size()];
         int k = 0;
-        for (int i = 1; i <= GRASP.SIZE; i++) {
+        for (int i = 1; i <= Main.size; i++) {
 
-            if(!this.isNodeRing(i)) {
+            if (!this.isNodeRing(i)) {
                 // default best is the position before the first node
-                int bestCost = this.getRingEdgeCost(i ,ring.get(0));
+                int bestCost = this.getRingEdgeCost(i, ring.get(0));
                 int bestIndex = 0;
                 // check each position in the ring to find the least expensive
-                for(int j = 0; j < ring.size(); j++) {
+                for (int j = 0; j < ring.size(); j++) {
                     final int cost = this.getRingEdgeCost(ring.get(j), i);
-                    if(cost < bestCost) {
+                    if (cost < bestCost) {
                         bestCost = cost;
                         bestIndex = j + 1;
                     }
-                    Solution neighbour = new Solution(this, GRASP);
+                    Solution neighbour = new Solution(this);
                     neighbour.addNodeToRing(i, bestIndex);
                     neighbourhood[k] = neighbour;
                     k++;
@@ -149,7 +142,7 @@ public class Solution {
     public Solution[] removeNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[ring.size()];
         for (int i = 0; i < ring.size(); i++) {
-            Solution neighbour = new Solution(this, GRASP);
+            Solution neighbour = new Solution(this);
             neighbour.removeRingNode(i);
             neighbourhood[i] = neighbour;
         }
@@ -159,7 +152,7 @@ public class Solution {
     public Solution[] swapNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[ring.size()];
         for (int i = 0; i < ring.size(); i++) {
-            Solution neighbour = new Solution(this, GRASP);
+            Solution neighbour = new Solution(this);
             neighbour.swapRingNode(i);
             neighbourhood[i] = neighbour;
         }
@@ -168,20 +161,20 @@ public class Solution {
     }
 
     private void addNodeToRing(int node, int index) {
-        if(index == 0) {
+        if (index == 0) {
             this.ring.add(node, 0);
         }
         this.ring.add(node);
-        this.isRing[node] = true;
+        this.isRing[node - 1] = true;
     }
 
     private void removeRingNode(int index) {
-        this.isRing[this.ring.get(index)] = false;
+        this.isRing[this.ring.get(index) - 1] = false;
         this.ring.remove(index);
     }
 
     private void swapRingNode(int index) {
-        if(index == 0) {
+        if (index == 0) {
             int temp = this.ring.get(this.ring.size() - 1);
             this.ring.set(this.ring.size() - 1, this.ring.get(0));
             this.ring.set(0, temp);
