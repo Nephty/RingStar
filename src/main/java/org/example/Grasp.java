@@ -10,7 +10,21 @@ public class Grasp {
 
     private final int[][] ringCost;
 
-    private final int SIZE;
+    public final int SIZE;
+
+    private final ArrayList<ArrayList<Tuple<Integer>>> starOrdered;
+
+    public int[][] getStarCost() {
+        return starCost;
+    }
+
+    public ArrayList<ArrayList<Tuple<Integer>>> getStarOrdered() {
+        return starOrdered;
+    }
+
+    public int[][] getRingCost() {
+        return ringCost;
+    }
 
 
     public Grasp(int maxIter, double alpha, int[][] ringCost, int[][] starCost, int size) {
@@ -19,11 +33,20 @@ public class Grasp {
         this.starCost = starCost;
         this.ringCost = ringCost;
         this.SIZE = size;
+        this.starOrdered = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            ArrayList<Tuple<Integer>> tmp = new ArrayList<>();
+            for (int j = 0; j < size; j++) {
+                tmp.add(new Tuple<>(j, starCost[i][j]));
+            }
+            tmp.sort(Tuple::compareTo);
+            this.starOrdered.add(tmp);
+        }
     }
 
     public Solution findSolution() {
         // Implement the grasp algorithm for the ring star problem
-        Solution bestSolution = new Solution();
+        Solution bestSolution = new Solution(this);
         int bestCost = Integer.MAX_VALUE;
         for (int i = 0; i < maxIterations; i++) {
             Solution solution = constructSolution(); // Construct a greedy randomised solution
@@ -126,11 +149,11 @@ public class Grasp {
     // TODO : Ajouter à l'estimation du meilleur endroit pour lui dans le cycle.
     private Solution constructSolution() {
         final int MaxIter = 50; // Nombre d'itérations maximum pour la construction de la solution
-        Solution bestSolution = new Solution();
+        Solution bestSolution = new Solution(this);
 
 
         for (int i = 0; i < MaxIter; i++) {
-            Solution tmpSolution = new Solution();
+            Solution tmpSolution = new Solution(this);
             int[] restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
             int node = restrictedCandidateList[(int) (Math.random() * restrictedCandidateList.length)];
             // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
