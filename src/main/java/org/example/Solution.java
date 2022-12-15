@@ -12,8 +12,7 @@ public class Solution implements Comparable<Solution> {
         ADD_TO_RING,
         REMOVE_FROM_RING,
         SWAP_RING_STAR,
-        SWAP_TWO_RING,
-        RANDOM
+        SWAP_TWO_RING
     }
 
     private Random randomizer = new Random();
