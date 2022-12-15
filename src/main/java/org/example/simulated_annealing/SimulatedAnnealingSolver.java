@@ -7,16 +7,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.example.Main.getStarSolution;
-import static org.example.Main.setupStarOrdered;
+import static org.example.Main.*;
 
 public class SimulatedAnnealingSolver {
-    public static Solution solve(int nodesCount, ArrayList<ArrayList<Integer>> ringCosts, ArrayList<ArrayList<Integer>> starCosts) {
+    private double energy;
+    private double temperature = 0.95;
+
+    public static Solution solve() {
         ArrayList<Integer> ring = new ArrayList<>(List.of(1));
         ArrayList<Integer[]> star;
 
         // Randomly put nodes in the ring or the star (50%)
-        for (int i = 2; i <= nodesCount; i++) {
+        for (int i = 2; i <= size; i++) {
             if (Math.random() > 0.5) {
                 ring.add(i);
             }

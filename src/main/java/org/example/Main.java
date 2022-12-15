@@ -7,30 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) {
-        int[][] starCostt = {{0, 4, 8, 4, 8, 12, 8, 12, 16},
-                {4, 0, 1, 8, 4, 1, 12, 8, 12},
-                {8, 1, 0, 12, 8, 4, 16, 12, 8},
-                {4, 8, 12, 0, 4, 8, 1, 8, 12},
-                {8, 4, 8, 4, 0, 4, 8, 1, 1},
-                {12, 1, 4, 8, 4, 0, 12, 8, 4},
-                {8, 12, 16, 1, 8, 12, 0, 4, 8},
-                {12, 8, 12, 8, 1, 8, 4, 0, 4},
-                {16, 12, 8, 12, 1, 4, 8, 4, 0}};
-
-        int[][] ringCostt = {{0, 1, 6, 1, 2, 9, 6, 9, 12},
-                {1, 0, 3, 2, 1, 3, 9, 6, 9},
-                {6, 3, 0, 9, 6, 3, 12, 9, 6},
-                {1, 2, 9, 0, 1, 6, 3, 6, 9},
-                {2, 1, 6, 1, 0, 3, 6, 3, 6},
-                {9, 3, 3, 6, 3, 0, 9, 6, 3},
-                {6, 9, 12, 3, 6, 9, 0, 1, 6},
-                {9, 6, 9, 6, 3, 6, 1, 0, 3},
-                {12, 9, 6, 9, 6, 3, 6, 3, 0}};
-
-        int size = 9;
-
-        ArrayList<ArrayList<Integer>> starCosts = new ArrayList<>();
+    public static ArrayList<ArrayList<Integer>> starCosts = new ArrayList<>();
+    static {
         starCosts.add(new ArrayList<>(Arrays.asList(0, 4, 8, 4, 8, 12, 8, 12, 16)));
         starCosts.add(new ArrayList<>(Arrays.asList(4, 0, 1, 8, 4, 1, 12, 8, 12)));
         starCosts.add(new ArrayList<>(Arrays.asList(8, 1, 0, 12, 8, 4, 16, 12, 8)));
@@ -40,8 +18,10 @@ public class Main {
         starCosts.add(new ArrayList<>(Arrays.asList(8, 12, 16, 1, 8, 12, 0, 4, 8)));
         starCosts.add(new ArrayList<>(Arrays.asList(12, 8, 12, 8, 1, 8, 4, 0, 4)));
         starCosts.add(new ArrayList<>(Arrays.asList(16, 12, 8, 12, 1, 4, 8, 4, 0)));
+    }
 
-        ArrayList<ArrayList<Integer>> ringCosts = new ArrayList<>();
+    public static ArrayList<ArrayList<Integer>> ringCosts = new ArrayList<>();
+    static {
         ringCosts.add(new ArrayList<>(Arrays.asList(0, 1, 6, 1, 2, 9, 6, 9, 12)));
         ringCosts.add(new ArrayList<>(Arrays.asList(1, 0, 3, 2, 1, 3, 9, 6, 9)));
         ringCosts.add(new ArrayList<>(Arrays.asList(6, 3, 0, 9, 6, 3, 12, 9, 6)));
@@ -51,8 +31,12 @@ public class Main {
         ringCosts.add(new ArrayList<>(Arrays.asList(6, 9, 12, 3, 6, 9, 0, 1, 6)));
         ringCosts.add(new ArrayList<>(Arrays.asList(9, 6, 9, 6, 3, 6, 1, 0, 3)));
         ringCosts.add(new ArrayList<>(Arrays.asList(12, 9, 6, 9, 6, 3, 6, 3, 0)));
+    }
 
-        SimulatedAnnealingSolver.solve(size, ringCosts, starCosts);
+    public static int size = 9;
+
+    public static void main(String[] args) {
+        SimulatedAnnealingSolver.solve();
     }
 
 
