@@ -1,12 +1,19 @@
 package org.example;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
+    // On met certaines variables en static pour pouvoir les utiliser dans les autres classes
+    static int[][] starCost; // Matrice des coûts pour aller de i à j dans star
+    static int[][] ringCost; // Matrice des côuts pour aller de i à j dans le ring
+    static int size; // Taille du problème
+    static ArrayList<ArrayList<Tuple>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
+                                                    // chemins d'un noeud i vers un noeud j de cout value
     public static void main(String[] args) {
-        int[][] starCost = {{0, 4, 8, 4, 8, 12, 8, 12, 16},
+        starCost = new int[][]{{0, 4, 8, 4, 8, 12, 8, 12, 16},
                 {4, 0, 1, 8, 4, 1, 12, 8, 12},
                 {8, 1, 0, 12, 8, 4, 16, 12, 8},
                 {4, 8, 12, 0, 4, 8, 1, 8, 12},
@@ -16,7 +23,7 @@ public class Main {
                 {12, 8, 12, 8, 1, 8, 4, 0, 4},
                 {16, 12, 8, 12, 1, 4, 8, 4, 0}};
 
-        int[][] ringCost = {{0, 1, 6, 1, 2, 9, 6, 9, 12},
+        ringCost = new int[][]{{0, 1, 6, 1, 2, 9, 6, 9, 12},
                 {1, 0, 3, 2, 1, 3, 9, 6, 9},
                 {6, 3, 0, 9, 6, 3, 12, 9, 6},
                 {1, 2, 9, 0, 1, 6, 3, 6, 9},
@@ -26,17 +33,16 @@ public class Main {
                 {9, 6, 9, 6, 3, 6, 1, 0, 3},
                 {12, 9, 6, 9, 6, 3, 6, 3, 0}};
 
-        int size = 9;
-        int[] ring = {4, 5, 2, 1};
+        size = 9;
+        starOrdered = setupStarOrdered(starCost, size);
 
-        ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, size);
-
+        ArrayList<Integer> ring = new ArrayList<>(Arrays.asList(4, 5, 2, 1));
         ArrayList<Integer[]> res = getStarSolution(starOrdered, ring, size);
         for (Integer[] i : res) {
             System.out.println(Arrays.toString(i));
         }
 
-        System.out.println("Total cost: " + calculateSolution(ringCost, starCost, ring, starOrdered, size)
+        System.out.println("Total cost: " + calculateSolution(ring)
                 + ". Expected: 9");
     }
 
@@ -45,22 +51,14 @@ public class Main {
      * Calcule le coût d'une solution en faisan la somme des coûts des chemins entre les noeuds du ring
      * + somme des chemins entre les noeuds du star.
      *
-     * @param ringCost Matrice des côuts pour aller de i à j dans le ring
-     * @param starCost Matrice des coûts pour aller de i à j dans star
      * @param ring     Noeuds du ring
-     * @param starOrdered matrice 2D de tuple (value, j) qui sont les couts des
-     *                   chemins d'un noeud i vers un noeud j de cout value
-     * @param size     Taille du problème
      * @return Le coùt de la solution
      */
-    public static int calculateSolution(int[][] ringCost, int[][] starCost, int[] ring,
-                                        ArrayList<ArrayList<Tuple>> starOrdered, int size) {
+    public static int calculateSolution(ArrayList<Integer> ring) {
         int cost = 0;
 
-        for (int i = 0; i < ring.length; i++) {
-            cost += ringCost[ring[i] - 1][ring[(i + 1) % ring.length] - 1];
-            // System.out.println("Ring cost ("+i+","+(i + 1) % ring.length+"): "
-            //       + ringCost[ring[i]-1][ring[(i + 1) % ring.length]-1]);
+        for (int i = 0; i < ring.size(); i++) {
+            cost += ringCost[ring.get(i) - 1][ring.get((i + 1) % ring.size()) - 1];
         }
 
         ArrayList<Integer[]> starSolution = getStarSolution(starOrdered, ring, size);
@@ -84,10 +82,10 @@ public class Main {
      * @param size     La taille du problème.
      * @return Une liste de tuple (i, j) qui sont les noeuds du star et leur meilleur dépot.
      */
-    public static ArrayList<Integer[]> getStarSolution(ArrayList<ArrayList<Tuple>> starCostOrdered, int[] ring, int size) {
+    public static ArrayList<Integer[]> getStarSolution(ArrayList<ArrayList<Tuple>> starCostOrdered, ArrayList<Integer> ring, int size) {
         boolean[] ringNodes = new boolean[size];
-        for (int i = 0; i < ring.length; i++) {
-            ringNodes[ring[i] - 1] = true;
+        for (int i = 0; i < ring.size(); i++) {
+            ringNodes[ring.get(i) - 1] = true;
         }
         ArrayList<Integer[]> res = new ArrayList<>();
         for (int i = 0; i < size; i++) {
