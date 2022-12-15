@@ -2,11 +2,13 @@ package org.example;
 
 import org.example.Solution;
 
+import java.util.ArrayList;
+
 public class Grasp {
-    private float ALPHA;
+    private double ALPHA;
     private int maxIterations;
 
-    public Grasp(int maxIter, float alpha) {
+    public Grasp(int maxIter, double alpha) {
         this.ALPHA = alpha;
         this.maxIterations = maxIter;
     }
@@ -37,10 +39,10 @@ public class Grasp {
      * @param node Le noeud à estimer
      * @return Le coût estimé
      */
-    public int estimation(int node){
+    //public double estimation(int node, Solution solution) {
         // Implement the estimation function
-        return minIncrement(node) + meanAllStar(node);
-    }
+      //  return minIncrement(node,solution) + meanAllStar(node,solution);
+    //}
 
     /**
      * Cherche le plus petit coût pour ajouter le noeud dans le cycle.
@@ -48,24 +50,44 @@ public class Grasp {
      * @param node Le noeud à ajouter
      * @return La valeur du plus petit coût ajouté
      */
-    public int minIncrement(int node) {
+    public int[] minIncrement(int node, Solution solution) {
         // Implement the minIncrement function
+        ArrayList<Integer> solutionRing = solution.getRing();
+        int ringSize = solutionRing.size();
+        // On prend comme valeur initiale le coût de l'ajouter à la fin.
+        int rightIndex = 0;
+        int leftIndex = ringSize-1;
+        int min = Main.ringCost[node][rightIndex]
+                + Main.ringCost[leftIndex][node];
+
+        for (int i=1; i<ringSize; i++) {
+            int cost = Main.ringCost[solutionRing.get(i)-1][node-1]
+                    + Main.ringCost[node-1][solutionRing.get((i+1)%ringSize)-1];
+            if (cost < min) {
+                min = cost;
+                rightIndex = i+1;
+                leftIndex = i;
+
+            }
+        }
 
         // Utiliser ça ou alors on ajoute simplement à la fin ?
-        return 0;
+        return new int[]{min, leftIndex, rightIndex};
     }
 
     /**
-     * Retourne la moyenne de tous les coûts des chemins du star vers le noeud.
-     * @param node Le noeud à ajouter
-     * @return La moyenne des coûts des chemins du star vers le noeud
-     */
-    public int meanAllStar(int node) {
+     *
+    public double meanAllStar(int node, Solution solution) {
         // Implement the meanAllStar
-
-
-        return 0;
+        double res = 0;
+        for(int j=0; j<Main.size; j++){
+            if (!solution.getRing_bool()[j] && j != node){
+                res += Main.starCost[node][j];
+            }
+        }
+        return  res / Main.size;
     }
+    */
 
     private Solution constructSolution() {
         Solution bestSolution = null;
