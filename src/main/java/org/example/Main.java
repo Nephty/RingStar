@@ -49,9 +49,6 @@ public class Main {
         SimulatedAnnealingSolver.solve();
     }
 
-
-
-
     /**
      * Calcule le meilleur dépot pour chaque noeud du star. <br>
      * En gros, il va prendre chaque noeud du star, va chercher sa ligne dans starCostOrdered
@@ -108,28 +105,5 @@ public class Main {
             res.add(tmp);
         }
         return res;
-    }
-
-    /**
-     * Calcule le coût d'une solution en faisan la somme des coûts des chemins entre les noeuds du ring
-     * + somme des chemins entre les noeuds du star.
-     *
-     * @param ring     Noeuds du ring
-     * @return Le coùt de la solution
-     */
-    public static int calculateSolution(ArrayList<Integer> ring) {
-        int cost = 0;
-
-        for (int i = 0; i < ring.size(); i++) {
-            cost += ringCost[ring.get(i) - 1][ring.get((i + 1) % ring.size()) - 1];
-        }
-
-        ArrayList<Integer[]> starSolution = getStarSolution(starOrdered, ring, size);
-        for (Integer[] i : starSolution) {
-            cost += starCost[i[0] - 1][i[1] - 1];
-            // System.out.println("Star cost ("+i[0]+","+i[1]+"): " + starCost[i[0]-1][i[1]-1]);
-        }
-
-        return cost;
     }
 }

@@ -24,8 +24,26 @@ public class Solution {
         this.star = star;
     }
 
+    /**
+     * Calcule le coût d'une solution en faisan la somme des coûts des chemins entre les noeuds du ring
+     * + somme des chemins entre les noeuds du star.
+     *
+     * @return Le coùt de la solution
+     */
     public int cost() {
-        return 0;
+        int cost = 0;
+
+        for (int i = 0; i < ring.size(); i++) {
+            cost += ringCost[ring.get(i) - 1][ring.get((i + 1) % ring.size()) - 1];
+        }
+
+        ArrayList<Integer[]> starSolution = getStarSolution(starOrdered, ring, size);
+        for (Integer[] i : starSolution) {
+            cost += starCost[i[0] - 1][i[1] - 1];
+            // System.out.println("Star cost ("+i[0]+","+i[1]+"): " + starCost[i[0]-1][i[1]-1]);
+        }
+
+        return cost;
     }
 
     public ArrayList<Integer> getRing() {
@@ -109,6 +127,6 @@ public class Solution {
                 Collections.swap(ring, source, destination);
                 break;
         }
-        return null;
+        return this;
     }
 }
