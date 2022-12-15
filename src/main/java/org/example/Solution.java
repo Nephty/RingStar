@@ -1,31 +1,29 @@
 package org.example;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Arrays;
+import java.util.List;
 
 public class Solution {
     private ArrayList<Integer> ring;
-    private ArrayList<Integer[]> star;
-    public Solution(ArrayList<Integer> ring, ArrayList<Integer[]> star) {
+    private ArrayList<Integer[]> star; // Utile ?
+
+    private int cost;
+    public Solution(ArrayList<Integer> ring) {
         this.ring = ring;
-        this.star = star;
+        // this.star = star;
+
+        this.cost = Main.calculateSolution(ring);
+    }
+
+    public Solution() {
+        this.ring = new ArrayList<>(List.of(1));
+
+        this.cost = Main.calculateSolution(ring);
     }
 
     public int cost() {
-        return 0;
-    }
-
-    public void switchStarNode() {
-        final int starNodeToSwitch = ThreadLocalRandom.current().nextInt(0, star.size() + 1);
-        final Integer[] starEdge = star.get(starNodeToSwitch);
-        int newRingNode;
-        do {
-            int randomNum = ThreadLocalRandom.current().nextInt(0, ring.size() + 1);
-            newRingNode = ring.get(randomNum);
-        }while (newRingNode == starEdge[1]);
-        starEdge[1] = newRingNode;
-        star.set(starNodeToSwitch, starEdge);
+        return cost;
     }
 
     public ArrayList<Integer> getRing() {
@@ -34,6 +32,7 @@ public class Solution {
 
     public void setRing(ArrayList<Integer> ring) {
         this.ring = ring;
+        this.cost = Main.calculateSolution(ring);
     }
 
     public ArrayList<Integer[]> getStar() {
@@ -43,6 +42,5 @@ public class Solution {
     public void setStar(ArrayList<Integer[]> star) {
         this.star = star;
     }
-
 
 }
