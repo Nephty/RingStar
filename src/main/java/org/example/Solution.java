@@ -1,6 +1,7 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import static org.example.Main.*;
@@ -77,8 +78,8 @@ public class Solution {
                 ring.remove(source); // remove from ring at index
                 // re-compute the star solution that derives from the new ring
                 // TODO : OPTIMISATION : can we not just remove the right entry in star ?
-                ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCosts, ringCosts.size());
-                star = getStarSolution(starOrdered, ring, ringCosts.size());
+                ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, ringCost.length);
+                star = getStarSolution(starOrdered, ring, ringCost.length);
                 break;
             case SWAP_RING_STAR:
                 if (ring.size() == 0 || star.size() == 0) {
@@ -93,18 +94,19 @@ public class Solution {
                 ring.add(source, star.get(destination)[0]); // add to the ring at the index of the removed element
                 // re-compute the star solution that derives from the new ring
                 // TODO : OPTIMISATION : can we not just remove the right entry in star ?
-                starOrdered = setupStarOrdered(starCosts, ringCosts.size());
-                star = getStarSolution(starOrdered, ring, ringCosts.size());
+                starOrdered = setupStarOrdered(starCost, ringCost.length);
+                star = getStarSolution(starOrdered, ring, ringCost.length);
             case SWAP_TWO_RING:
                 if (ring.size() < 2) {
                     return this;
                 }
 
                 source = randomizer.nextInt(ring.size());
-                ring.remove(source);
+                do {
+                    destination = randomizer.nextInt(ring.size());
+                } while (source == destination);
 
-                destination = randomizer.nextInt(ring.size());
-                ring.remove(destination);
+                Collections.swap(ring, source, destination);
                 break;
         }
         return null;

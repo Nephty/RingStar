@@ -25,8 +25,8 @@ public class SimulatedAnnealingSolver {
         }
 
         // Build the star by adding couples (node, closest ring node)
-        ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCosts, ringCosts.size());
-        star = getStarSolution(starOrdered, ring, ringCosts.size());
+        ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, ringCost.length);
+        star = getStarSolution(starOrdered, ring, ringCost.length);
 
         return new Solution(ring, star);
     }
