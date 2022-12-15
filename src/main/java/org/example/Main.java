@@ -46,7 +46,7 @@ public class Main {
                 + ". Expected: 9");
 
         Grasp grasp = new Grasp(50, 0.6, ringCost, starCost, size);
-        System.out.println(Arrays.toString(grasp.minIncrement(7, new Solution(ring))));
+        System.out.println(Arrays.toString(grasp.minIncrement(7, new Solution(ring, grasp))));
 
     }
 

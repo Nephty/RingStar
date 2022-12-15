@@ -6,14 +6,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Grasp {
-    private double ALPHA;
-    private int maxIterations;
+    private final double ALPHA;
+    private final int maxIterations;
 
-    private int[][] starCost;
+    private final int[][] starCost;
 
-    private int[][] ringCost;
+    private final ArrayList<ArrayList<Tuple>> starOrdered;
 
-    private final int SIZE;
+    public int[][] getStarCost() {
+        return starCost;
+    }
+
+    public ArrayList<ArrayList<Tuple>> getStarOrdered() {
+        return starOrdered;
+    }
+
+    public int[][] getRingCost() {
+        return ringCost;
+    }
+
+    private final int[][] ringCost;
+
+    public final int SIZE;
 
 
     public Grasp(int maxIter, double alpha, int[][] ringCost, int[][] starCost, int size) {
@@ -22,11 +36,20 @@ public class Grasp {
         this.starCost = starCost;
         this.ringCost = ringCost;
         this.SIZE = size;
+        this.starOrdered = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            ArrayList<Tuple> tmp = new ArrayList<>();
+            for (int j = 0; j < size; j++) {
+                tmp.add(new Tuple(j, starCost[i][j]));
+            }
+            tmp.sort(Tuple::compareTo);
+            this.starOrdered.add(tmp);
+        }
     }
 
     public Solution findSolution() {
         // Implement the grasp algorithm for the ring star problem
-        Solution bestSolution = new Solution();
+        Solution bestSolution = new Solution(this);
         int bestCost = Integer.MAX_VALUE;
         for (int i = 0; i < maxIterations; i++) {
             Solution solution = constructSolution(); // Construct a greedy randomised solution
