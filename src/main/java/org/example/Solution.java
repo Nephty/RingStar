@@ -78,12 +78,32 @@ public class Solution {
         return Main.ringCost[nodeA - 1][nodeB - 1];
     }
 
+    public boolean isNodeRing(int node) {
+        return isRing[node - 1];
+    }
+
     public void addNodeToRing(int node, int index) {
         if(index == 0) {
             this.ring.add(node, 0);
         }
         this.ring.add(node);
         this.isRing[node] = true;
+    }
+
+    public void removeRingNode(int index) {
+        this.isRing[this.ring.get(index)] = false;
+        this.ring.remove(index);
+    }
+    public void swapRingNode(int index) {
+        if(index == 0) {
+            int temp = this.ring.get(this.ring.size() - 1);
+            this.ring.set(this.ring.size() - 1, this.ring.get(0));
+            this.ring.set(0, temp);
+        } else {
+            int temp = this.ring.get(index - 1);
+            this.ring.set(index - 1, this.ring.get(index));
+            this.ring.set(index, temp);
+        }
     }
 
     public void setRing(ArrayList<Integer> ring) {

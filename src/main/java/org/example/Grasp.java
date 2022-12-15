@@ -106,24 +106,41 @@ public class Grasp {
      * Movement:
      * -add a node to the ring
      * -remove a node from the ring
-     * -swap to node in the ring
+     * -swap two node in the ring
      * @param solution a solution
      * @return
              */
     private Solution localSearch(Solution solution) {
-        return null;
+        Solution bestNeighbour = null;
+        for (Solution neighbour: addNodeNeighbourhood(solution)) {
+            if(neighbour.getCost() < solution.getCost()) {
+                bestNeighbour = neighbour;
+            }
+        }
+        for (Solution neighbour: removeNodeNeighbourhood(solution)) {
+            if(neighbour.getCost() < solution.getCost()) {
+                bestNeighbour = neighbour;
+            }
+        }
+        for (Solution neighbour: swapNodeNeighbourhood(solution)) {
+            if(neighbour.getCost() < solution.getCost()) {
+                bestNeighbour = neighbour;
+            }
+        }
+        return bestNeighbour == null ? solution: bestNeighbour;
     }
 
-    private ArrayList<Solution> addNodeNeighbourhood(Solution solution) {
-        ArrayList<Solution> neighbourhood = new ArrayList<>();
-        for (int i = 1; i < Main.size + 1; i++) {
+    private Solution[] addNodeNeighbourhood(Solution solution) {
+        Solution[] neighbourhood = new Solution[Main.size - solution.getRing().size()];
+        int k = 0;
+        for (int i = 1; i <= Main.size; i++) {
 
-           if(!solution.getIsRing()[i]) {
+           if(!solution.isNodeRing(i)) {
                // default best is the position before the first node
                int bestCost = solution.getRingEdgeCost(i ,solution.getRing().get(0));
                int bestIndex = 0;
                // check each position in the ring to find the least expensive
-               for(int j = 0; j < solution.getRing().size() ;j++) {
+               for(int j = 0; j < solution.getRing().size(); j++) {
                    final int cost = solution.getRingEdgeCost(solution.getRing().get(j), i);
                    if(cost < bestCost) {
                        bestCost = cost;
@@ -131,11 +148,31 @@ public class Grasp {
                    }
                    Solution neighbour = new Solution(solution);
                    neighbour.addNodeToRing(i, bestIndex);
-                   neighbourhood.add(neighbour);
+                   neighbourhood[k] = neighbour;
+                   k++;
                }
            }
 
         }
         return neighbourhood;
+    }
+
+    private Solution[] removeNodeNeighbourhood(Solution solution) {
+        Solution[] neighbourhood = new Solution[solution.getRing().size()];
+        for (int i = 0; i < solution.getRing().size(); i++) {
+            Solution neighbour = new Solution(solution);
+            neighbour.removeRingNode(i);
+            neighbourhood[i] = neighbour;
+        }
+        return neighbourhood;
+    }
+    private Solution[] swapNodeNeighbourhood(Solution solution) {
+        Solution[] neighbourhood = new Solution[solution.getRing().size()];
+        for (int i = 0; i < solution.getRing().size(); i++) {
+            Solution neighbour = new Solution(solution);
+            neighbour.removeRingNode(i);
+            neighbourhood[i] = neighbour;
+        }
+        return new Solution[0];
     }
 }
