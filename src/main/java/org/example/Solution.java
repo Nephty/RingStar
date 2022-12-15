@@ -76,7 +76,9 @@ public class Solution implements Comparable<Solution> {
         int source, destination;
 
         // TODO : throw exception instead of returning this so we can change behavior if our movement was unsuccessful
-        switch (Movement.values()[randomizer.nextInt(Movement.values().length)]) {
+        Movement movement = Movement.values()[randomizer.nextInt(Movement.values().length)];
+        System.out.println("movement = " + movement);
+        switch (movement) {
             case ADD_TO_RING:
                 if (star.size() == 0) {
                     return this;
