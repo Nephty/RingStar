@@ -28,6 +28,18 @@ public class SimulatedAnnealingSolver {
         ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, ringCost.length);
         star = getStarSolution(starOrdered, ring, ringCost.length);
 
+        Solution initialSolution = new Solution(ring, star);
+
+        System.out.println("Initial solution : ");
+        System.out.println(initialSolution);
+
+        Solution currentSolution = new Solution(ring, star);
+
+        currentSolution.randomMovement();
+
+        System.out.println("New solution : ");
+        System.out.println(currentSolution);
+
         return new Solution(ring, star);
     }
 }

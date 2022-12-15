@@ -12,7 +12,7 @@ public class Main {
     static ArrayList<ArrayList<Tuple>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
     // chemins d'un noeud i vers un noeud j de cout value
 
-    public static void main(String[] args) {
+    static {
         starCost = new int[][]{{0, 4, 8, 4, 8, 12, 8, 12, 16},
                 {4, 0, 1, 8, 4, 1, 12, 8, 12},
                 {8, 1, 0, 12, 8, 4, 16, 12, 8},
@@ -35,7 +35,9 @@ public class Main {
 
         size = 9;
         starOrdered = setupStarOrdered(starCost, size);
+    }
 
+    public static void main(String[] args) {
         ArrayList<Integer> ring = new ArrayList<>(Arrays.asList(4, 5, 2, 1));
         ArrayList<Integer[]> res = getStarSolution(starOrdered, ring, size);
         for (Integer[] i : res) {

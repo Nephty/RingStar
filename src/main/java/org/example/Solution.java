@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 
 import static org.example.Main.*;
 
@@ -66,7 +63,7 @@ public class Solution implements Comparable<Solution> {
         this.star = star;
     }
 
-    public Solution randomMovement(Movement movement) {
+    public Solution randomMovement() {
         // Choisir la position qu'on va déplacer et sa destination
         //  Aussi choisir si on déplace dans le ring ou dans le star
         // Puis calculer le score de la solution
@@ -79,7 +76,7 @@ public class Solution implements Comparable<Solution> {
         int source, destination;
 
         // TODO : throw exception instead of returning this so we can change behavior if our movement was unsuccessful
-        switch (movement) {
+        switch (Movement.values()[randomizer.nextInt(Movement.values().length)]) {
             case ADD_TO_RING:
                 if (star.size() == 0) {
                     return this;
@@ -133,8 +130,27 @@ public class Solution implements Comparable<Solution> {
         }
         return this;
     }
+
     @Override
     public int compareTo(Solution o) {
         return Integer.compare(this.cost(), o.cost());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder bobTheBuilder = new StringBuilder();
+        bobTheBuilder.append("Ring: ");
+        for (Integer i : ring) {
+            bobTheBuilder.append(i);
+            bobTheBuilder.append(" ");
+        }
+        bobTheBuilder.append("\nStar: ");
+        for (Integer[] i : star) {
+            bobTheBuilder.append(i[0]);
+            bobTheBuilder.append(" ");
+        }
+        bobTheBuilder.append("\nCost: ");
+        bobTheBuilder.append(cost());
+        return bobTheBuilder.toString();
     }
 }
