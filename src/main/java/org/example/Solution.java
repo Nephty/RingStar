@@ -2,11 +2,15 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import static org.example.Main.*;
 
-public class Solution {
+public class Solution implements Comparable<Solution> {
+
+
+
     public enum Movement {
         ADD_TO_RING,
         REMOVE_FROM_RING,
@@ -128,5 +132,9 @@ public class Solution {
                 break;
         }
         return this;
+    }
+    @Override
+    public int compareTo(Solution o) {
+        return Integer.compare(this.cost(), o.cost());
     }
 }

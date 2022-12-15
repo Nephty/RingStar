@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.simulated_annealing.SimulatedAnnealingSolver;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -43,8 +42,10 @@ public class Main {
             System.out.println(Arrays.toString(i));
         }
 
-        System.out.println("Total cost: " + calculateSolution(ring)
+        /*System.out.println("Total cost: " + Solution.cost(ring)
                 + ". Expected: 9");
+
+         */
 
         SimulatedAnnealingSolver.solve();
     }
