@@ -11,6 +11,7 @@ public class Solution {
 
     private final boolean[] isRing = new boolean[Main.size];
     private int cost = -1;
+
     public Solution(ArrayList<Integer> ring) {
         this.ring = ring;
         for (Integer node : ring) {
@@ -82,30 +83,6 @@ public class Solution {
         return isRing[node - 1];
     }
 
-    public void addNodeToRing(int node, int index) {
-        if(index == 0) {
-            this.ring.add(node, 0);
-        }
-        this.ring.add(node);
-        this.isRing[node] = true;
-    }
-
-    public void removeRingNode(int index) {
-        this.isRing[this.ring.get(index)] = false;
-        this.ring.remove(index);
-    }
-    public void swapRingNode(int index) {
-        if(index == 0) {
-            int temp = this.ring.get(this.ring.size() - 1);
-            this.ring.set(this.ring.size() - 1, this.ring.get(0));
-            this.ring.set(0, temp);
-        } else {
-            int temp = this.ring.get(index - 1);
-            this.ring.set(index - 1, this.ring.get(index));
-            this.ring.set(index, temp);
-        }
-    }
-
     public void setRing(ArrayList<Integer> ring) {
         this.ring = ring;
         for (Integer node : ring) {
@@ -118,6 +95,10 @@ public class Solution {
         return ring;
     }
 
+    public int ringSize() {
+        return ring.size();
+    }
+
     public boolean[] getIsRing() {
         return isRing;
     }
@@ -127,6 +108,80 @@ public class Solution {
             calculateStarSolution();
         }
         return star;
+    }
+    //-----------------------------------------------------------------------------------------//
+    //NeighbourHood methods
+    public Solution[] addNodeNeighbourhood() {
+        Solution[] neighbourhood = new Solution[Main.size - ring.size()];
+        int k = 0;
+        for (int i = 1; i <= Main.size; i++) {
+
+            if(!this.isNodeRing(i)) {
+                // default best is the position before the first node
+                int bestCost = this.getRingEdgeCost(i ,ring.get(0));
+                int bestIndex = 0;
+                // check each position in the ring to find the least expensive
+                for(int j = 0; j < ring.size(); j++) {
+                    final int cost = this.getRingEdgeCost(ring.get(j), i);
+                    if(cost < bestCost) {
+                        bestCost = cost;
+                        bestIndex = j + 1;
+                    }
+                    Solution neighbour = new Solution(this);
+                    neighbour.addNodeToRing(i, bestIndex);
+                    neighbourhood[k] = neighbour;
+                    k++;
+                }
+            }
+
+        }
+        return neighbourhood;
+    }
+
+    public Solution[] removeNodeNeighbourhood() {
+        Solution[] neighbourhood = new Solution[ring.size()];
+        for (int i = 0; i < ring.size(); i++) {
+            Solution neighbour = new Solution(this);
+            neighbour.removeRingNode(i);
+            neighbourhood[i] = neighbour;
+        }
+        return neighbourhood;
+    }
+
+    public Solution[] swapNodeNeighbourhood() {
+        Solution[] neighbourhood = new Solution[ring.size()];
+        for (int i = 0; i < ring.size(); i++) {
+            Solution neighbour = new Solution(this);
+            neighbour.swapRingNode(i);
+            neighbourhood[i] = neighbour;
+        }
+        return neighbourhood;
+        //TODO fix redundant solution problem
+    }
+
+    private void addNodeToRing(int node, int index) {
+        if(index == 0) {
+            this.ring.add(node, 0);
+        }
+        this.ring.add(node);
+        this.isRing[node] = true;
+    }
+
+    private void removeRingNode(int index) {
+        this.isRing[this.ring.get(index)] = false;
+        this.ring.remove(index);
+    }
+
+    private void swapRingNode(int index) {
+        if(index == 0) {
+            int temp = this.ring.get(this.ring.size() - 1);
+            this.ring.set(this.ring.size() - 1, this.ring.get(0));
+            this.ring.set(0, temp);
+        } else {
+            int temp = this.ring.get(index - 1);
+            this.ring.set(index - 1, this.ring.get(index));
+            this.ring.set(index, temp);
+        }
     }
     //TODO Make sure the starList doesn't get outdated
 }
