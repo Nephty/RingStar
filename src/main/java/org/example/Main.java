@@ -38,17 +38,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ArrayList<Integer> ring = new ArrayList<>(Arrays.asList(4, 5, 2, 1));
-        ArrayList<Integer[]> res = getStarSolution(starOrdered, ring, size);
-        for (Integer[] i : res) {
-            System.out.println(Arrays.toString(i));
-        }
-
-        /*System.out.println("Total cost: " + Solution.cost(ring)
-                + ". Expected: 9");
-
-         */
-
         SimulatedAnnealingSolver.solve();
     }
 
