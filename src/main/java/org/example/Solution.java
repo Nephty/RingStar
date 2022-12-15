@@ -6,8 +6,11 @@ import java.util.List;
 
 public class Solution {
     private ArrayList<Integer> ring;
-    private ArrayList<Integer[]> star; // Utile ?
 
+    private int ringSize;
+
+    private boolean[] ring_bool;
+    private ArrayList<Integer[]> star; // Utile ?
     private int cost;
     public Solution(ArrayList<Integer> ring) {
         this.ring = ring;
@@ -18,8 +21,18 @@ public class Solution {
 
     public Solution() {
         this.ring = new ArrayList<>(List.of(1));
+        this.ringSize = ring.size();
+
+        setRing_bool();
 
         this.cost = Main.calculateSolution(ring);
+    }
+
+    public void setRing_bool(){
+        ring_bool = new boolean[Main.size];
+        for(int i : ring){
+            ring_bool[i] = true;
+        }
     }
 
     public int cost() {
@@ -32,6 +45,7 @@ public class Solution {
 
     public void setRing(ArrayList<Integer> ring) {
         this.ring = ring;
+        this.ringSize = ring.size();
         this.cost = Main.calculateSolution(ring);
     }
 
@@ -43,4 +57,11 @@ public class Solution {
         this.star = star;
     }
 
+    public boolean[] getRing_bool() {
+        return ring_bool;
+    }
+
+    public int getRingSize() {
+        return ringSize;
+    }
 }
