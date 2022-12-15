@@ -3,14 +3,21 @@ package org.example;
 import org.example.Solution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Grasp {
     private double ALPHA;
     private int maxIterations;
 
-    public Grasp(int maxIter, double alpha) {
+    private int[][] starCost;
+
+    private int[][] ringCost;
+
+    public Grasp(int maxIter, double alpha, int[][] ringCost, int[][] starCost) {
         this.ALPHA = alpha;
         this.maxIterations = maxIter;
+        this.starCost = starCost;
+        this.ringCost = ringCost;
     }
 
     public Solution findSolution() {
@@ -20,13 +27,13 @@ public class Grasp {
         for (int i = 0; i < maxIterations; i++) {
             Solution solution = constructSolution(); // Construct a greedy randomised solution
             Solution solution_local = localSearch(solution); // Recherche localement autour de la solution
-            int cost = solution_local.cost();
+            int cost = solution_local.getCost();
             if (cost < bestCost) {
                 bestCost = cost;
                 bestSolution = solution;
             }
 
-            System.out.println("Iteration " + i + " bestCost: " + bestSolution.cost());
+            System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
         }
         return bestSolution;
 
@@ -95,7 +102,40 @@ public class Grasp {
         return null;
     }
 
+    /**
+     * Movement:
+     * -add a node to the ring
+     * -remove a node from the ring
+     * -swap to node in the ring
+     * @param solution a solution
+     * @return
+             */
     private Solution localSearch(Solution solution) {
         return null;
+    }
+
+    private ArrayList<Solution> addNodeNeighbourhood(Solution solution) {
+        ArrayList<Solution> neighbourhood = new ArrayList<>();
+        for (int i = 1; i < Main.size + 1; i++) {
+
+           if(!solution.getIsRing()[i]) {
+               // default best is the position before the first node
+               int bestCost = solution.getRingEdgeCost(i ,solution.getRing().get(0));
+               int bestIndex = 0;
+               // check each position in the ring to find the least expensive
+               for(int j = 0; j < solution.getRing().size() ;j++) {
+                   final int cost = solution.getRingEdgeCost(solution.getRing().get(j), i);
+                   if(cost < bestCost) {
+                       bestCost = cost;
+                       bestIndex = j + 1;
+                   }
+                   Solution neighbour = new Solution(solution);
+                   neighbour.addNodeToRing(i, bestIndex);
+                   neighbourhood.add(neighbour);
+               }
+           }
+
+        }
+        return neighbourhood;
     }
 }

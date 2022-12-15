@@ -45,7 +45,7 @@ public class Main {
         System.out.println("Total cost: " + calculateSolution(ring)
                 + ". Expected: 9");
 
-        Grasp grasp = new Grasp(50, 0.6);
+        Grasp grasp = new Grasp(50, 0.6, ringCost, starCost);
         System.out.println(Arrays.toString(grasp.minIncrement(7, new Solution(ring))));
 
     }
