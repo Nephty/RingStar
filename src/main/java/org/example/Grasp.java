@@ -90,12 +90,12 @@ public class Grasp {
         // On prend comme valeur initiale le coût de l'ajouter à la fin.
         int rightIndex = 0;
         int leftIndex = ringSize - 1;
-        int min = Main.ringCost[node - 1][solutionRing.get(leftIndex) - 1]
-                + Main.ringCost[solutionRing.get(rightIndex) - 1][node - 1];
+        int min = this.ringCost[node - 1][solutionRing.get(leftIndex) - 1]
+                + this.ringCost[solutionRing.get(rightIndex) - 1][node - 1];
 
         for (int i = 1; i < ringSize; i++) {
-            int cost = Main.ringCost[solutionRing.get(i) - 1][node - 1]
-                    + Main.ringCost[node - 1][solutionRing.get((i + 1) % ringSize) - 1];
+            int cost = this.ringCost[solutionRing.get(i) - 1][node - 1]
+                    + this.ringCost[node - 1][solutionRing.get((i + 1) % ringSize) - 1];
             if (cost < min) {
                 min = cost;
                 rightIndex = (i + 1) % ringSize;
