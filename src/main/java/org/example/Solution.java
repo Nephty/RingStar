@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.simulated_annealing.MovementException;
+
 import java.util.*;
 
 import static org.example.Main.*;
@@ -59,7 +61,7 @@ public class Solution implements Comparable<Solution> {
         this.star = star;
     }
 
-    public Solution randomMovement() {
+    public Solution randomMovement() throws MovementException {
         // copy ring and star because otherwise it would modify the solution upon which we call the method
         ArrayList<Integer> localRing = new ArrayList<>(ring);
         ArrayList<Integer[]> localStar = new ArrayList<>(star);
@@ -75,7 +77,8 @@ public class Solution implements Comparable<Solution> {
         switch (movement) {
             case ADD_TO_RING:
                 if (localStar.size() == 0) {
-                    return new Solution(localRing, localStar);
+                    throw new MovementException("This movement is impossible : no nodes in the star");
+                    //return new Solution(localRing, localStar);
                 }
 
                 source = randomizer.nextInt(localStar.size()); // random index in star

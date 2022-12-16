@@ -37,7 +37,13 @@ public class SimulatedAnnealingSolver {
         System.out.println("Coût de la solution de départ : " + previousSolution.cost());
 
         for (int i = 0; i < nIters; i++) {
-            currentSolution = previousSolution.randomMovement();
+            try{
+                currentSolution = previousSolution.randomMovement();
+            }catch (MovementException e){
+                System.out.println(e.getMessage());
+                currentSolution = previousSolution;
+            }
+            //currentSolution = previousSolution.randomMovement();
             // TODO : OPTIMISATION : change previous.cost to a var since we will call it many times
             float costDifference = currentSolution.cost() - previousSolution.cost();
 
