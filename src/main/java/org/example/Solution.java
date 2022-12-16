@@ -135,11 +135,11 @@ public class Solution {
                         bestCost = cost;
                         bestIndex = j + 1;
                     }
-                    Solution neighbour = new Solution(this, GRASP);
-                    neighbour.addNodeToRing(i, bestIndex);
-                    neighbourhood[k] = neighbour; // TODO : Problème avec index ici.
-                    k++;
                 }
+                Solution neighbour = new Solution(this, GRASP);
+                neighbour.addNodeToRing(i, bestIndex);
+                neighbourhood[k] = neighbour;
+                k++;
             }
 
         }
