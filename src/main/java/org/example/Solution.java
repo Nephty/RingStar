@@ -38,6 +38,13 @@ public class Solution {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Solution {cost = " + this.getCost() +
+                ", ringSize = " + this.ringSize() +
+                ", size = " + GRASP.SIZE + "}" ;
+    }
+
     private void calculateCost() {
         this.cost = 0;
 

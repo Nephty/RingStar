@@ -1,5 +1,6 @@
 package org.example;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class Grasp {
@@ -13,6 +14,8 @@ public class Grasp {
     public final int SIZE;
 
     private final ArrayList<ArrayList<Tuple<Integer>>> starOrdered;
+
+    public long movementCount;
 
     public int[][] getStarCost() {
         return starCost;
@@ -55,10 +58,34 @@ public class Grasp {
             if (cost < bestCost) {
                 bestCost = cost;
                 bestSolution = solution;
+                System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
             }
 
-            System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+
         }
+        return bestSolution;
+
+    }
+
+    public Solution findSolution(long maxTime) {
+        Instant start = Instant.now();
+        Solution bestSolution = new Solution(this);
+        int bestCost = Integer.MAX_VALUE;
+        do {
+            for (int i = 0; i < 1000; i++) {
+                Solution solution = constructSolution(); // Construct a greedy randomised solution
+                Solution solution_local = localSearch(solution); // Recherche localement autour de la solution
+                int cost = solution_local.getCost();
+                if (cost < bestCost) {
+                    bestCost = cost;
+                    bestSolution = solution;
+                    System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+                }
+
+
+            }
+        }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
+
         return bestSolution;
 
     }
@@ -157,7 +184,7 @@ public class Grasp {
             boolean searching = true;
             while (searching){
                 int[] restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
-                int node = restrictedCandidateList[(int) (Math.random() * restrictedCandidateList.length)];
+                int node = restrictedCandidateList[(int) (Math.random() * restrictedCandidateList.length)]; // TODO Index out of bound here
                 // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
 
                 ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
@@ -196,7 +223,9 @@ public class Grasp {
             if (neighbour.getCost() < solution.getCost()) {
                 bestNeighbour = neighbour;
             }
+
         }
+
         for (Solution neighbour : solution.removeNodeNeighbourhood()) {
             if (neighbour.getCost() < solution.getCost()) {
                 bestNeighbour = neighbour;
@@ -207,6 +236,7 @@ public class Grasp {
                 bestNeighbour = neighbour;
             }
         }
+        movementCount += SIZE + solution.ringSize();
         return bestNeighbour == null ? solution : bestNeighbour;
     }
 

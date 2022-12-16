@@ -1,5 +1,9 @@
 package org.example;
 
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,44 +14,59 @@ public class Main {
     static int size; // Taille du problème
     static ArrayList<ArrayList<Tuple<Integer>>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
 
-    // chemins d'un noeud i vers un noeud j de cout value
-    public static void main(String[] args) {
-        starCost = new int[][]{{0, 4, 8, 4, 8, 12, 8, 12, 16},
-                {4, 0, 1, 8, 4, 1, 12, 8, 12},
-                {8, 1, 0, 12, 8, 4, 16, 12, 8},
-                {4, 8, 12, 0, 4, 8, 1, 8, 12},
-                {8, 4, 8, 4, 0, 4, 8, 1, 1},
-                {12, 1, 4, 8, 4, 0, 12, 8, 4},
-                {8, 12, 16, 1, 8, 12, 0, 4, 8},
-                {12, 8, 12, 8, 1, 8, 4, 0, 4},
-                {16, 12, 8, 12, 1, 4, 8, 4, 0}};
-
-        ringCost = new int[][]{{0, 1, 6, 1, 2, 9, 6, 9, 12},
-                {1, 0, 3, 2, 1, 3, 9, 6, 9},
-                {6, 3, 0, 9, 6, 3, 12, 9, 6},
-                {1, 2, 9, 0, 1, 6, 3, 6, 9},
-                {2, 1, 6, 1, 0, 3, 6, 3, 6},
-                {9, 3, 3, 6, 3, 0, 9, 6, 3},
-                {6, 9, 12, 3, 6, 9, 0, 1, 6},
-                {9, 6, 9, 6, 3, 6, 1, 0, 3},
-                {12, 9, 6, 9, 6, 3, 6, 3, 0}};
-
-        size = 9;
-        starOrdered = setupStarOrdered(starCost, size);
-
-        ArrayList<Integer> ring = new ArrayList<>(Arrays.asList(4, 5, 2, 1));
-        ArrayList<Integer[]> res = getStarSolution(starOrdered, ring, size);
-        for (Integer[] i : res) {
-            System.out.println(Arrays.toString(i));
+    public static void main(String[] args) throws FileNotFoundException {
+        for (double i = 0; i <= 3 ; i += 0.1) {
+            tryAlpha(i/10, 10000);
         }
-
-        System.out.println("Total cost: " + calculateSolution(ring)
-                + ". Expected: 9");
-
-        Grasp grasp = new Grasp(50, 0.6, ringCost, starCost, size);
-        System.out.println(grasp.findSolution());
-
     }
+
+    public static void runGrasp(int maxTime) throws FileNotFoundException {
+        MatrixReader matrixReader = new MatrixReader("src/main/resources/data1.dat");
+        matrixReader.matrixRead();
+        Grasp grasp = new Grasp(
+                3000,
+                0.9,
+                matrixReader.ringCost,
+                matrixReader.starCost,
+                matrixReader.length_of_matrix
+        );
+        Instant instant = Instant.now();
+        System.out.println(grasp.findSolution(10000));
+        System.out.println("Calculation time:" + (Instant.now().toEpochMilli() - instant.toEpochMilli()) + " ms");
+        System.out.println("Movement count: " + grasp.movementCount);
+    }
+
+    public static void tryAlpha(double alpha, int msPerGrasp) throws FileNotFoundException {
+        StringBuilder output = new StringBuilder();
+        output.append("alpha = ").append(alpha).append("\n");
+        for(int i = 1; i < 10; i++) {
+            MatrixReader matrixReader = new MatrixReader("src/main/resources/data" + i +".dat");
+            matrixReader.matrixRead();
+            Grasp grasp = new Grasp(
+                    3000,
+                    alpha,
+                    matrixReader.ringCost,
+                    matrixReader.starCost,
+                    matrixReader.length_of_matrix
+            );
+            output.append("\ndata").append(i).append(":\n");
+            output.append(grasp.findSolution(msPerGrasp).toString()).append("\n");
+        }
+        final String filename = "src/main/resources/results_alpha_" + alpha + ".dat";
+        saveFile(filename, output.toString());
+    }
+
+    public static void saveFile(String filename, String content) {
+        try {
+            FileWriter myWriter = new FileWriter(filename);
+            myWriter.write(content);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
 
 
     /**
