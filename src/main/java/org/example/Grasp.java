@@ -74,6 +74,7 @@ public class Grasp {
         Solution bestSolution = new Solution(this);
         int bestCost = Integer.MAX_VALUE;
         ArrayList<Solution> solutions = new ArrayList<>();
+        int j = 0;
         do {
             for (int i = 0; i < 1000; i++) {
                 Solution solution = constructSolution(); // Construct a greedy randomised solution
@@ -83,10 +84,10 @@ public class Grasp {
                     bestCost = cost;
                     bestSolution = solution;
                     solutions.add(solution);
-                    System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+                    System.out.println("Iteration " + (i + j*1000)+ " bestCost: " + bestSolution.getCost());
                 }
 
-
+                j++;
             }
         }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
 
@@ -103,8 +104,24 @@ public class Grasp {
      * @return Le coût estimé
      */
     public int[] estimation(int node, Solution solution) {
+        // TODO : trouver un moyen de prendre en compte les chemins du star
         // Implement the estimation function
-        return minIncrement(node, solution);
+        int[] minIncrement = minIncrement(node, solution);
+        // minIncrement[0] += meanStar(node,solution);
+        // TODO : regarder si y'a pas moyen de faire mieux parce que ça a pas l'air ouf.
+        return minIncrement;
+    }
+
+
+    public double meanStar(int node, Solution solution) {
+        double mean = 0;
+        for (int i = 0; i < SIZE; i++) {
+            if (!solution.getIsRing()[i]) {
+                mean += starCost[node-1][i];
+            }
+        }
+        return mean / SIZE;
+
     }
 
     /**
@@ -177,7 +194,6 @@ public class Grasp {
 
     }
 
-    // TODO : Ajouter à l'estimation du meilleur endroit pour lui dans le cycle.
     private Solution constructSolution() {
         final int MaxIter = 50; // Nombre d'itérations maximum pour la construction de la solution
         Solution bestSolution = new Solution(this);
@@ -192,8 +208,7 @@ public class Grasp {
                     searching = false;
                 } else {
                     // On a donc la liste de tuple (a, b) où a = le numéro du noeud et b l'indice du noeud de droite dans le ring.
-                    Tuple<Integer> node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size())); // TODO Index out of bound here
-                    // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
+                    Tuple<Integer> node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
 
                     ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
                     if (node.getB() == 0) {
@@ -205,7 +220,7 @@ public class Grasp {
 
                     if (newSolution.getCost() < tmpSolution.getCost()) {
                         tmpSolution = newSolution;
-                    } else if (newRing.size() > 3) { // Pas très sûr de ça mais on va tester
+                    } else if (newRing.size() > 3) {
                         // TODO : améliorer ce paramètre
                         searching = false;
                     }
