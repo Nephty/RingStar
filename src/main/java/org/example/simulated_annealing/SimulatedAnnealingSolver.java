@@ -4,14 +4,16 @@ import org.example.Solution;
 import org.example.Tuple;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.example.Main.*;
 
 public class SimulatedAnnealingSolver {
-    private double energy;
-    private double temperature = 0.95;
+    private static double energy = 1;
+    private static double initialTemperature = 100;
+    private static double finalTemperature = 0.01;
+    private static int nIters = 1000;
+    private static double deltaEnergy = 1F / nIters;
 
     public static Solution solve() {
         ArrayList<Integer> ring = new ArrayList<>(List.of(1));
@@ -28,17 +30,35 @@ public class SimulatedAnnealingSolver {
         ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, ringCost.length);
         star = getStarSolution(starOrdered, ring, ringCost.length);
 
-        Solution initialSolution = new Solution(ring, star);
+        Solution previousSolution = new Solution(ring, star);
+        Solution currentSolution;
 
-        System.out.println("Initial solution : ");
-        System.out.println(initialSolution);
+        ArrayList<Integer> costHistory = new ArrayList<>();
+        System.out.println("Coût de la solution de départ : " + previousSolution.cost());
 
-        Solution currentSolution = new Solution(ring, star);
+        for (int i = 0; i < nIters; i++) {
+            currentSolution = previousSolution.randomMovement();
+            // TODO : OPTIMISATION : change previous.cost to a var since we will call it many times
+            float costDifference = currentSolution.cost() - previousSolution.cost();
 
-        currentSolution.randomMovement();
-
-        System.out.println("New solution : ");
-        System.out.println(currentSolution);
+            if (costDifference < 0) {
+                previousSolution = new Solution(currentSolution.ring, currentSolution.star);
+            } else {
+                if (Math.random() > Math.exp(-costDifference / initialTemperature)) {
+                    previousSolution = new Solution(currentSolution.ring, currentSolution.star);
+                }
+            }
+            costHistory.add(previousSolution.cost());
+            System.out.println("initialTemperature = " + initialTemperature);
+            System.out.println("finalTemperature = " + finalTemperature);
+            System.out.println();
+            if (initialTemperature > finalTemperature) {
+                initialTemperature *= 0.9F;
+            }
+            energy -= deltaEnergy;
+        }
+        System.out.println(costHistory);
+        System.out.println("Coût de la solution finale : " + previousSolution.cost());
 
         return new Solution(ring, star);
     }
