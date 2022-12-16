@@ -79,9 +79,9 @@ public class Grasp {
                 if (cost < bestCost) {
                     bestCost = cost;
                     bestSolution = solution;
-                    System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+                    //System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
                 }
-
+                System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
 
             }
         }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
@@ -164,7 +164,7 @@ public class Grasp {
             }
         }
 
-        float maxBoundary = (float) (max - ALPHA * (max - min));
+        float maxBoundary = (float) (min - ALPHA * (max - min));
 
 
         // Retourne le minIncrement max et min

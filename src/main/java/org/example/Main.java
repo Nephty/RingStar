@@ -1,11 +1,13 @@
 package org.example;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
     // On met certaines variables en static pour pouvoir les utiliser dans les autres classes
@@ -15,9 +17,12 @@ public class Main {
     static ArrayList<ArrayList<Tuple<Integer>>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
 
     public static void main(String[] args) throws FileNotFoundException {
-        for (double i = 0; i <= 3 ; i += 0.1) {
+
+        for (double i = 0; i <= 0.35 ; i += 0.1) {
             tryAlpha(i/10, 10000);
         }
+
+        //analysePerformance(0, 3);
     }
 
     public static void runGrasp(int maxTime) throws FileNotFoundException {
@@ -49,10 +54,12 @@ public class Main {
                     matrixReader.starCost,
                     matrixReader.length_of_matrix
             );
+
             output.append("\ndata").append(i).append(":\n");
             output.append(grasp.findSolution(msPerGrasp).toString()).append("\n");
+            System.out.println("data" + i + " done");
         }
-        final String filename = "src/main/resources/results_alpha_" + alpha + ".dat";
+        final String filename = "src/main/resources/results_alpha_0.0" + (int)(alpha * 10) + ".dat";
         saveFile(filename, output.toString());
     }
 
@@ -65,5 +72,51 @@ public class Main {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+    private static final int[] bestResults = {1278, 2113, 1244, 1614, 2504, 1710, 63846, 115388, 94265};
+    public static void analysePerformance(int alphaStart, int alphaEnd) throws FileNotFoundException {
+        int[][] alphaPerformance = new int[alphaEnd - alphaStart + 1][9];
+        for (int i = 0; i < alphaPerformance.length; i++) {
+            File file = new File("src/main/resources/results_alpha_0.0" + i + ".dat");
+            Scanner scanner = new Scanner(file);
+            int k = 0;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if(line.startsWith("S")) {
+                    int costStart = line.lastIndexOf('t') + 4;
+                    int costEnd = line.indexOf('r') - 2;
+                    int cost = Integer.parseInt(line.substring(costStart, costEnd));
+                    alphaPerformance[i][k] = cost;
+                    k++;
+                }
+            }
+        }
+        double[][] performanceSurplus = new double[alphaPerformance.length][9];
+        double[] percentageAverage = new double[alphaPerformance.length];
+        for (int i = 0; i < alphaPerformance.length; i++) {
+            System.out.println("\nFor an alpha of 0.0" + (alphaStart + i) + ":\n");
+            double average = 0;
+            // cost = bestCost * surplus
+            // surplus - 1 = percentage of surplus
+            for (int j = 0; j < 9; j++) {
+                double surplus = ((double)alphaPerformance[i][j] / (double)bestResults[j]) - 1;
+                performanceSurplus[i][j] = surplus;
+                System.out.println("data" + (alphaStart + j) + ": +" + (int)(surplus * 100) + "%");
+                average += surplus;
+            }
+            System.out.println("Average surplus of " + average / 9);
+            percentageAverage[i] = average;
+        }
+        int index = 0;
+        double bestAverage = percentageAverage[0];
+        for (int i = 1; i < percentageAverage.length; i++) {
+            if(percentageAverage[i] < bestAverage) {
+                index = i;
+                bestAverage = percentageAverage[i];
+            }
+        }
+        System.out.println("The best average is for an alpha of 0.0" + (index + alphaStart) + ": " + bestAverage / 9);
+
     }
 }
