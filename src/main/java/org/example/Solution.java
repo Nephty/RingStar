@@ -78,7 +78,6 @@ public class Solution implements Comparable<Solution> {
             case ADD_TO_RING:
                 if (localStar.size() == 0) {
                     throw new MovementException("This movement is impossible : no nodes in the star");
-                    //return new Solution(localRing, localStar);
                 }
 
                 source = randomizer.nextInt(localStar.size()); // random index in star
@@ -86,10 +85,11 @@ public class Solution implements Comparable<Solution> {
                 localRing.add(randomizer.nextInt(localRing.size()), localStar.get(source)[0]); // add to the ring at a random index
                 localStar.remove(source); // remove from star at index
                 break;
+
             case REMOVE_FROM_RING:
                 // NOTE : inserting in the star at any index has the same result
                 if (localRing.size() <= 1) { // at least 1 node in the ring
-                    return new Solution(localRing, localStar);
+                    throw new MovementException("This movement is impossible : at least 1 node in the ring");
                 }
 
                 source = randomizer.nextInt(localRing.size()); // random index in ring
@@ -99,9 +99,10 @@ public class Solution implements Comparable<Solution> {
                 ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, ringCost.length);
                 localStar = getStarSolution(starOrdered, localRing, ringCost.length);
                 break;
+
             case SWAP_RING_STAR:
                 if (localRing.size() == 1 || localStar.size() == 0) {
-                    return new Solution(localRing, localStar);
+                    throw new MovementException("This movement is impossible : either the ring will be empty or there are no node in stars");
                 }
 
                 source = randomizer.nextInt(localRing.size()); // random index in ring
@@ -113,9 +114,10 @@ public class Solution implements Comparable<Solution> {
                 // TODO : OPTIMISATION : can we not just remove the right entry in star ?
                 starOrdered = setupStarOrdered(starCost, ringCost.length);
                 localStar = getStarSolution(starOrdered, localRing, ringCost.length);
+
             case SWAP_TWO_RING:
                 if (localRing.size() < 2) {
-                    return new Solution(localRing, localStar);
+                    throw new MovementException("This movement is impossible : there must be at least two node in the ring to swap");
                 }
 
                 source = randomizer.nextInt(localRing.size());

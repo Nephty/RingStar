@@ -12,7 +12,7 @@ public class SimulatedAnnealingSolver {
     private static double energy = 1;
     private static double initialTemperature = 100;
     private static double finalTemperature = 0.01;
-    private static int nIters = 1000;
+    private static int nIters = 2000000;
     private static double deltaEnergy = 1F / nIters;
 
     public static Solution solve() {
@@ -32,6 +32,7 @@ public class SimulatedAnnealingSolver {
 
         Solution previousSolution = new Solution(ring, star);
         Solution currentSolution;
+        Solution bestSolution = previousSolution;
 
         ArrayList<Integer> costHistory = new ArrayList<>();
         System.out.println("Coût de la solution de départ : " + previousSolution.cost());
@@ -43,18 +44,21 @@ public class SimulatedAnnealingSolver {
                 System.out.println(e.getMessage());
                 currentSolution = previousSolution;
             }
-            //currentSolution = previousSolution.randomMovement();
             // TODO : OPTIMISATION : change previous.cost to a var since we will call it many times
             float costDifference = currentSolution.cost() - previousSolution.cost();
 
             if (costDifference < 0) {
                 previousSolution = new Solution(currentSolution.ring, currentSolution.star);
+                if (bestSolution.cost() > previousSolution.cost()){
+                    bestSolution = previousSolution;
+                }
             } else {
                 if (Math.random() > Math.exp(-costDifference / initialTemperature)) {
                     previousSolution = new Solution(currentSolution.ring, currentSolution.star);
                 }
             }
             costHistory.add(previousSolution.cost());
+            costHistory.add(bestSolution.cost());
             System.out.println("initialTemperature = " + initialTemperature);
             System.out.println("finalTemperature = " + finalTemperature);
             System.out.println();
@@ -65,6 +69,7 @@ public class SimulatedAnnealingSolver {
         }
         System.out.println(costHistory);
         System.out.println("Coût de la solution finale : " + previousSolution.cost());
+        System.out.println("Coût de la meilleure solution : " + bestSolution.cost());
 
         return new Solution(ring, star);
     }
