@@ -45,6 +45,10 @@ public class Solution {
                 ", size = " + GRASP.SIZE + "}" ;
     }
 
+    public int compareTo(Solution solution) {
+        return Integer.compare(this.getCost(), solution.getCost());
+    }
+
     private void calculateCost() {
         this.cost = 0;
 

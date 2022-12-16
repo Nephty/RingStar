@@ -2,6 +2,8 @@ package org.example;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class Grasp {
     private final double ALPHA;
@@ -71,6 +73,7 @@ public class Grasp {
         Instant start = Instant.now();
         Solution bestSolution = new Solution(this);
         int bestCost = Integer.MAX_VALUE;
+        ArrayList<Solution> solutions = new ArrayList<>();
         do {
             for (int i = 0; i < 1000; i++) {
                 Solution solution = constructSolution(); // Construct a greedy randomised solution
@@ -79,14 +82,15 @@ public class Grasp {
                 if (cost < bestCost) {
                     bestCost = cost;
                     bestSolution = solution;
-                    //System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+                    solutions.add(solution);
+                    System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
                 }
-                System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+
 
             }
         }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
 
-        return bestSolution;
+        return solutions.stream().min(Solution::compareTo).get();
 
     }
 
@@ -98,9 +102,9 @@ public class Grasp {
      * @param node Le nœud à estimer
      * @return Le coût estimé
      */
-    public double estimation(int node, Solution solution) {
+    public int[] estimation(int node, Solution solution) {
         // Implement the estimation function
-        return minIncrement(node, solution)[0];
+        return minIncrement(node, solution);
     }
 
     /**
@@ -132,7 +136,7 @@ public class Grasp {
         }
 
         // Utiliser ça ou alors on ajoute simplement à la fin ?
-        return new int[]{min, leftIndex, rightIndex};
+        return new int[]{min, rightIndex};
     }
 
     /**
@@ -141,35 +145,35 @@ public class Grasp {
      * @param solution La solution en cours de construction
      * @return La liste des candidats restreints
      */
-    public int[] computeRestrictedCandidateList(Solution solution) {
+    public ArrayList<Tuple<Integer>> computeRestrictedCandidateList(Solution solution) {
         // TODO : tester si ça marche bien
         // Parcourir chaque noeud du star et calculer son estimation.
         double min = Integer.MAX_VALUE;
         double max = Integer.MIN_VALUE;
 
-        ArrayList<Tuple<Double>> estimationList = new ArrayList<>();
-        // Contient les tuples (a, b) où a = le numéro du noeud et b = son estimation.
+        ArrayList<Triplet<Integer,Integer,Integer>> estimationList = new ArrayList<>();
+        // Contient les triplets (a, b, c) où a = le numéro du noeud et b = son estimation et c l'indice du noeud de droite dans le ring
 
         for (int i = 1; i < SIZE; i++) { // On commence à 1 parce que le premier noeud est toujours dans le ring (depot)
             int node = i + 1;
             if (!solution.getIsRing()[node - 1]) { // On veut faire le test que sur les noeuds qui ne sont pas déjà dans le ring
-                double estimation = estimation(node, solution);
-                estimationList.add(new Tuple<>((double) node, estimation));
-                if (estimation < min) {
-                    min = estimation;
+                int[] estimation = estimation(node, solution);
+                estimationList.add(new Triplet<>(node, estimation[0], estimation[1]));
+                if (estimation[0] < min) {
+                    min = estimation[0];
                 }
-                if (estimation > max) {
-                    max = estimation;
+                if (estimation[0] > max) {
+                    max = estimation[0];
                 }
             }
         }
 
-        float maxBoundary = (float) (min - ALPHA * (max - min));
+        float maxBoundary = (float) (min + ALPHA * (max - min));
 
 
         // Retourne le minIncrement max et min
-        return estimationList.stream().filter(tuple -> tuple.getB() <= maxBoundary)
-                .map(tuple -> tuple.getA().intValue()).mapToInt(i -> i).toArray();
+        return (ArrayList<Tuple<Integer>>)  estimationList.stream().filter(triplet -> triplet.getValue1() <= maxBoundary)
+                .map(triplet -> new Tuple<>(triplet.getValue0(), triplet.getValue2())).collect(Collectors.toList());
 
     }
 
@@ -183,19 +187,28 @@ public class Grasp {
             Solution tmpSolution = new Solution(this);
             boolean searching = true;
             while (searching){
-                int[] restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
-                int node = restrictedCandidateList[(int) (Math.random() * restrictedCandidateList.length)]; // TODO Index out of bound here
-                // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
-
-                ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
-                newRing.add(node);
-                Solution newSolution = new Solution(newRing, this);
-
-                if (newSolution.getCost() < tmpSolution.getCost()){
-                    tmpSolution = newSolution;
-                } else if (newRing.size() > 3){ // Pas très sûr de ça mais on va tester
-                    // TODO : améliorer ce paramètre
+                ArrayList<Tuple<Integer>> restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
+                if (restrictedCandidateList.isEmpty()) {
                     searching = false;
+                } else {
+                    // On a donc la liste de tuple (a, b) où a = le numéro du noeud et b l'indice du noeud de droite dans le ring.
+                    Tuple<Integer> node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size())); // TODO Index out of bound here
+                    // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
+
+                    ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
+                    if (node.getB() == 0) {
+                        newRing.add(node.getA());
+                    } else {
+                        newRing.add(node.getB(), node.getA());
+                    }
+                    Solution newSolution = new Solution(newRing, this);
+
+                    if (newSolution.getCost() < tmpSolution.getCost()) {
+                        tmpSolution = newSolution;
+                    } else if (newRing.size() > 3) { // Pas très sûr de ça mais on va tester
+                        // TODO : améliorer ce paramètre
+                        searching = false;
+                    }
                 }
             }
 

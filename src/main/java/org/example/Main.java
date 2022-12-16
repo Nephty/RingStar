@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.List;
 
 public class Main {
     // On met certaines variables en static pour pouvoir les utiliser dans les autres classes
@@ -36,7 +37,7 @@ public class Main {
                 matrixReader.length_of_matrix
         );
         Instant instant = Instant.now();
-        System.out.println(grasp.findSolution(10000));
+        System.out.println(grasp.findSolution(maxTime));
         System.out.println("Calculation time:" + (Instant.now().toEpochMilli() - instant.toEpochMilli()) + " ms");
         System.out.println("Movement count: " + grasp.movementCount);
     }

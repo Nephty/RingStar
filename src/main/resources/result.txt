@@ -1,0 +1,37 @@
+120000 ms de temps minimum, alpha = 0.4
+
+Data1 :
+Optimal solution : 1278 (ring = 100%)
+best solution : 1380 (ring = 100%)
+
+Data2 :
+Optimal solution : 2113 (ring = 33.33%)
+best solution : 2236 (ring = 29.41%)
+
+Data3 :
+Optimal solution : 1244 (ring = 11.76%)
+best solution : 1246 (ring = 7.8%)
+
+Data4 :
+bestCost =
+ringSize =
+
+Data5 :
+bestCost =
+ringSize =
+
+Data6 :
+bestCost =
+ringSize =
+
+Data7 :
+bestCost =
+ringSize =
+
+Data8 :
+bestCost =
+ringSize =
+
+Data9 :
+bestCost =
+ringSize =
