@@ -1,22 +1,14 @@
 package org.example;
 
-import org.example.simulated_annealing.SimulatedAnnealingSolver;
-
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class Main {
+public class Maint_methode {
     public static int[][] starCost; // Matrice des coûts pour aller de i à j dans star
     public static int[][] ringCost; // Matrice des côuts pour aller de i à j dans le ring
     public static int size; // Taille du problème
     static ArrayList<ArrayList<Tuple>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
     // chemins d'un noeud i vers un noeud j de cout value
 
-    static MatrixReader mr = new MatrixReader("src/main/resources/data5.dat");
-
-
-    /*
     static {
         starCost = new int[][]{{0, 4, 8, 4, 8, 12, 8, 12, 16},
                 {4, 0, 1, 8, 4, 1, 12, 8, 12},
@@ -39,20 +31,7 @@ public class Main {
         size = 9;
         starOrdered = setupStarOrdered(starCost, size);
     }
-     */
 
-    public static void main(String[] args) {
-        try{
-            mr.matrixRead();
-        }catch (FileNotFoundException e){
-            e.getMessage();
-        }
-        starCost = mr.starCost;
-        ringCost = mr.ringCost;
-        size = mr.length_of_matrix;
-        starOrdered = setupStarOrdered(starCost, size);
-        SimulatedAnnealingSolver.solve();
-    }
 
     /**
      * Calcule le meilleur dépot pour chaque noeud du star. <br>
