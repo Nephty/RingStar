@@ -80,7 +80,7 @@ public class Grasp {
      * Cherche le plus petit coût pour ajouter le nœud dans le cycle.
      * (on veut trouver l'endroit où (dist_{before} + dist_{after}) est minimum.)
      *
-     * @param node Le nœud à ajouter (numéro du noeud pas l'indice dans le tableau)
+     * @param node Le nœud à ajouté (numéro du noeud pas l'indice dans le tableau)
      * @return La valeur du plus petit coût ajouté
      */
     public int[] minIncrement(int node, Solution solution) {
@@ -154,12 +154,27 @@ public class Grasp {
 
         for (int i = 0; i < MaxIter; i++) {
             Solution tmpSolution = new Solution(this);
-            int[] restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
-            int node = restrictedCandidateList[(int) (Math.random() * restrictedCandidateList.length)];
-            // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
+            boolean searching = true;
+            while (searching){
+                int[] restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
+                int node = restrictedCandidateList[(int) (Math.random() * restrictedCandidateList.length)];
+                // TODO : Créer une solution avec le noeud choisi à la fin (Avant future amélioration)
 
+                ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
+                newRing.add(node);
+                Solution newSolution = new Solution(newRing, this);
 
-            // TODO : Vérifier le coût de la solution et si elle est meilleure que la meilleure solution, la remplacer.
+                if (newSolution.getCost() < tmpSolution.getCost()){
+                    tmpSolution = newSolution;
+                } else if (newRing.size() > 3){ // Pas très sûr de ça mais on va tester
+                    // TODO : améliorer ce paramètre
+                    searching = false;
+                }
+            }
+
+            if (tmpSolution.getCost() < bestSolution.getCost()){
+                bestSolution = tmpSolution;
+            }
         }
 
 

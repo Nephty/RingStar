@@ -137,7 +137,7 @@ public class Solution {
                     }
                     Solution neighbour = new Solution(this, GRASP);
                     neighbour.addNodeToRing(i, bestIndex);
-                    neighbourhood[k] = neighbour;
+                    neighbourhood[k] = neighbour; // TODO : Problème avec index ici.
                     k++;
                 }
             }
@@ -169,7 +169,7 @@ public class Solution {
 
     private void addNodeToRing(int node, int index) {
         if (index == 0) {
-            this.ring.add(node, 0);
+            this.ring.add(0, node);
         }
         this.ring.add(node);
         this.isRing[node - 1] = true;
