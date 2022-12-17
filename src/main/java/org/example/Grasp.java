@@ -90,7 +90,7 @@ public class Grasp {
                 j++;
             }
         }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
-
+        System.out.println("maxIter = " + j*1000);
         return solutions.stream().min(Solution::compareTo).get();
 
     }
@@ -107,7 +107,8 @@ public class Grasp {
         // TODO : trouver un moyen de prendre en compte les chemins du star
         // Implement the estimation function
         int[] minIncrement = minIncrement(node, solution);
-        // minIncrement[0] += meanStar(node,solution);
+
+        //minIncrement[0] += meanStar(node,solution);
         // TODO : regarder si y'a pas moyen de faire mieux parce que ça a pas l'air ouf.
         return minIncrement;
     }
@@ -163,7 +164,6 @@ public class Grasp {
      * @return La liste des candidats restreints
      */
     public ArrayList<Tuple<Integer>> computeRestrictedCandidateList(Solution solution) {
-        // TODO : tester si ça marche bien
         // Parcourir chaque noeud du star et calculer son estimation.
         double min = Integer.MAX_VALUE;
         double max = Integer.MIN_VALUE;

@@ -40,9 +40,6 @@ Teacher's solution : 115 388 (ring = 55%)
 best solution : 151 823 (ring = 28%)
 Difference : 27.27%
 
-Movement : 2 864 235
-Movement : 4 239 513
-
 Data9 :
 Teacher's solution : 94 265 (ring = 21%)
 best solution : 98 392 (ring = 11%)

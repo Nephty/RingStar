@@ -35,4 +35,13 @@ public class Triplet<A, B, C> {
     public void setValue2(C value2) {
         this.value2 = value2;
     }
+
+    @Override
+    public String toString() {
+        return "Triplet{" +
+                "value0=" + value0 +
+                ", value1=" + value1 +
+                ", value2=" + value2 +
+                '}';
+    }
 }

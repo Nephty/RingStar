@@ -18,8 +18,8 @@ public class Main {
     static ArrayList<ArrayList<Tuple<Integer>>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
 
     public static void main(String[] args) throws FileNotFoundException {
-        int maxTimeSeconds = 900;
-        String dataSet = "data1";
+        int maxTimeSeconds = 1200;
+        String dataSet = "data8";
         runGrasp(maxTimeSeconds*1000,dataSet);
     }
 
