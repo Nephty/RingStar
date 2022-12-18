@@ -26,7 +26,7 @@ public class Tuple<T extends Comparable<T>> implements Comparable<Tuple<T>> {
     }
 
     public String toString() {
-        return "index: " + this.a + " value: " + this.b;
+        return "a: " + this.a + " b: " + this.b;
     }
 
     public int compareTo(Tuple<T> t) {

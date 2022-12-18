@@ -184,11 +184,13 @@ public class Solution {
         }
         this.ring.add(node);
         this.isRing[node - 1] = true;
+        this.cost = -1;
     }
 
     private void removeRingNode(int index) {
         this.isRing[this.ring.get(index) - 1] = false;
         this.ring.remove(index);
+        this.cost = -1;
     }
 
     private void swapRingNode(int index) {
@@ -201,6 +203,7 @@ public class Solution {
             this.ring.set(index - 1, this.ring.get(index));
             this.ring.set(index, temp);
         }
+        this.cost = -1;
     }
     //TODO Make sure the starList doesn't get outdated
 }
