@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Grasp {
+    public int i = 0;
     private final double ALPHA;
     private final int maxIterations;
 
@@ -231,26 +232,25 @@ public class Grasp {
      * @return
      */
     private Solution localSearch(Solution solution) {
-        Solution bestNeighbour = null;
         for (Solution neighbour : solution.addNodeNeighbourhood()) {
             if (neighbour.getCost() < solution.getCost()) {
-                bestNeighbour = neighbour;
+                solution = neighbour;
             }
 
         }
 
         for (Solution neighbour : solution.removeNodeNeighbourhood()) {
             if (neighbour.getCost() < solution.getCost()) {
-                bestNeighbour = neighbour;
+                solution = neighbour;
             }
         }
         for (Solution neighbour : solution.swapNodeNeighbourhood()) {
             if (neighbour.getCost() < solution.getCost()) {
-                bestNeighbour = neighbour;
+                solution = neighbour;
             }
         }
         movementCount += SIZE + solution.ringSize();
-        return bestNeighbour == null ? solution : bestNeighbour;
+        return solution;
     }
 
 

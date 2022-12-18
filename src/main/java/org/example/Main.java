@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
 
         for (double i = 0; i <= 0.35 ; i += 0.1) {
-            tryAlpha(i/10, 10000);
+            tryAlpha(i, 10000);
         }
 
         //analysePerformance(0, 3);
@@ -55,6 +55,7 @@ public class Main {
                     matrixReader.starCost,
                     matrixReader.length_of_matrix
             );
+            grasp.i++;
 
             output.append("\ndata").append(i).append(":\n");
             output.append(grasp.findSolution(msPerGrasp).toString()).append("\n");
