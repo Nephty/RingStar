@@ -1,6 +1,5 @@
 package org.example;
 
-import org.example.simulated_annealing.SimulatedAnnealingSolver;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class Main {
     static MatrixReader mr = new MatrixReader("src/main/resources/data5.dat");
 
 
-    /*
+
     static {
         starCost = new int[][]{{0, 4, 8, 4, 8, 12, 8, 12, 16},
                 {4, 0, 1, 8, 4, 1, 12, 8, 12},
@@ -39,8 +38,8 @@ public class Main {
         size = 9;
         starOrdered = setupStarOrdered(starCost, size);
     }
-     */
 
+/**
     public static void main(String[] args) {
         try{
             mr.matrixRead();
@@ -53,6 +52,9 @@ public class Main {
         starOrdered = setupStarOrdered(starCost, size);
         SimulatedAnnealingSolver.solve();
     }
+*/
+
+
 
     /**
      * Calcule le meilleur dépot pour chaque noeud du star. <br>

@@ -31,6 +31,10 @@ public class Maint_methode {
         size = 9;
         starOrdered = setupStarOrdered(starCost, size);
     }
+    public static void main(String[] args) {
+        TabuSolver tb = new TabuSolver();
+        System.out.println(tb.solve(ringCost,starCost));
+    }
 
 
     /**

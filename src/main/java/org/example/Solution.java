@@ -9,9 +9,31 @@ public class Solution implements Comparable<Solution> {
     private int[][]ringCost;
     private int[][]starCost;
 
-    public ArrayList<Solution> getNeighboors(){ //Todo faire la fonction avec celle d'Augustin
+
+
+
+    public ArrayList<Solution> getNeighboors(){
         ArrayList<Solution> neighboors = new ArrayList<Solution>();
+
+        for (Solution neighbour : this.addNodeNeighbourhood()) {
+            neighboors.add(neighbour);
+        }
+
+        for (Solution neighbour : this.removeNodeNeighbourhood()) {
+            neighboors.add(neighbour);
+        }
+
+        for (Solution neighbour : this.swapNodeNeighbourhood()) {
+            neighboors.add(neighbour);
+        }
         return neighboors;
+    }
+
+    public void setRingCost(int[][] ringCost) {
+        this.ringCost = ringCost;
+    }
+    public void setStarCost(int[][] starCost) {
+        this.starCost = starCost;
     }
 
 
@@ -26,9 +48,12 @@ public class Solution implements Comparable<Solution> {
 
     public ArrayList<Integer> ring;
     public ArrayList<Integer[]> star;
-    public Solution(ArrayList<Integer> ring, ArrayList<Integer[]> star) {
+
+    public Solution(ArrayList<Integer> ring, ArrayList<Integer[]> star,int[][]ringCost,int[][]starCost) {
         this.ring = ring;
         this.star = star;
+        this.ringCost = ringCost;
+        this.starCost = starCost;
     }
 
     /**
@@ -77,7 +102,7 @@ public class Solution implements Comparable<Solution> {
         ArrayList<Integer[]> localStar = new ArrayList<>(star);
 
         if (localRing.size() == 0 && localStar.size() == 0) {
-            return new Solution(localRing, localStar);
+            return new Solution(localRing, localStar,ringCost,starCost);
         }
 
         int source, destination;
@@ -138,7 +163,7 @@ public class Solution implements Comparable<Solution> {
                 Collections.swap(localRing, source, destination);
                 break;
         }
-        return new Solution(localRing, localStar);
+        return new Solution(localRing, localStar,ringCost,starCost);
     }
 
     @Override
@@ -163,6 +188,90 @@ public class Solution implements Comparable<Solution> {
         bobTheBuilder.append(cost());
         return bobTheBuilder.toString();
     }
+
+    public boolean isNodeRing(int node){
+        return (star.stream().anyMatch((star) -> star[0] == node));
+    }
+
+    public int getRingEdgeCost(int nodeA, int nodeB){
+
+        return ringCost[nodeA - 1][nodeB - 1];
+
+    }
+
+    public Solution[] addNodeNeighbourhood() {
+        Solution[] neighbourhood = new Solution[ringCost.length - ring.size()];
+        int k = 0;
+        for (int i = 1; i <= ringCost.length; i++) {
+
+            if (!this.isNodeRing(i)) {
+                // default best is the position before the first node
+                int bestCost = this.getRingEdgeCost(i, ring.get(0));
+                int bestIndex = 0;
+                // check each position in the ring to find the least expensive
+                for (int j = 0; j < ring.size(); j++) {
+                    final int cost = this.getRingEdgeCost(ring.get(j), i);
+                    if (cost < bestCost) {
+                        bestCost = cost;
+                        bestIndex = j + 1;
+                    }
+                }
+                Solution neighbour = new Solution(this.ring, this.star,this.ringCost,this.starCost);
+                neighbour.addNodeToRing(i, bestIndex);
+                neighbourhood[k] = neighbour;
+                k++;
+            }
+
+        }
+        return neighbourhood;
+    }
+
+    public Solution[] removeNodeNeighbourhood() {
+        Solution[] neighbourhood = new Solution[ring.size()];
+        for (int i = 0; i < ring.size(); i++) {
+            Solution neighbour = new Solution(this.ring, this.star,this.ringCost,this.starCost);
+            neighbour.removeRingNode(i);
+            neighbourhood[i] = neighbour;
+        }
+        return neighbourhood;
+    }
+    public Solution[] swapNodeNeighbourhood() {
+        Solution[] neighbourhood = new Solution[ring.size()];
+        for (int i = 0; i < ring.size(); i++) {
+            Solution neighbour = new Solution(this.ring, this.star,this.ringCost,this.starCost);
+            neighbour.swapRingNode(i);
+            neighbourhood[i] = neighbour;
+        }
+        return neighbourhood;
+        //TODO fix redundant solution problem
+    }
+
+    private void addNodeToRing(int node, int index) {
+        if (index == 0) {
+            this.ring.add(0, node);
+        }
+        this.ring.add(node);
+
+    }
+
+    private void removeRingNode(int index) {
+        this.ring.remove(index);
+
+    }
+
+    private void swapRingNode(int index) {
+        if (index == 0) {
+            int temp = this.ring.get(this.ring.size() - 1);
+            this.ring.set(this.ring.size() - 1, this.ring.get(0));
+            this.ring.set(0, temp);
+        } else {
+            int temp = this.ring.get(index - 1);
+            this.ring.set(index - 1, this.ring.get(index));
+            this.ring.set(index, temp);
+        }
+
+    }
+
 }
 
 

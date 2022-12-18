@@ -14,8 +14,8 @@ import static org.example.Maint_methode.*;
 
 public class TabuSolver {
 
-    private static int max_nomove_iter = 50; //Nombre d'iteration a faire pour arreter la boucle (si on a k nombre de fois le meme résultat a la suite)
-    private static int time_limit = 500000; // 500000ms
+    private static int max_nomove_iter = 5; //Nombre d'iteration a faire pour arreter la boucle (si on a k nombre de fois le meme résultat a la suite)
+    private static int time_limit = 1000; // 500000ms
     private static int tabu_list_size = 10; // taille de la liste tabou (+ grand -> prend plus de temps mais peu etre plus ^précis, il faut adapter)
     private static int iter_number = 1000; // nombre d'iteration totale avant d'arreter l'algo
 
@@ -46,13 +46,15 @@ public class TabuSolver {
         ArrayList<ArrayList<Tuple>> starOrdered = setupStarOrdered(starCost, ringCost.length);
         star = getStarSolution(starOrdered, ring, ringCost.length);
 
-        Solution previousSolution = new Solution(ring, star);
-        Solution currentSolution;
+        Solution previousSolution = new Solution(ring, star,ringCost,starCost);
+        Solution currentSolution = null;
         Solution bestSolution = previousSolution;
 
 
 
         ArrayList<Integer> costHistory = new ArrayList<>();
+        previousSolution.setRingCost(ringCost);
+        previousSolution.setStarCost(starCost);
         System.out.println("Coût de la solution de départ : " + previousSolution.cost());
 
         tabuList.add(previousSolution);
@@ -65,52 +67,75 @@ public class TabuSolver {
 
         if (tabuList.size() != tabu_list_size){
 
-            while(time_check!= time_check2 + time_limit && iter_check!= iter_number && nomove_iter != max_nomove_iter){
+            while(time_check < time_check2 + time_limit && iter_check!= iter_number && nomove_iter != max_nomove_iter){
                 ArrayList<Solution> previousNeighboors = previousSolution.getNeighboors();
+
                 for(int i =0; i < previousNeighboors.size();i++){
                     if(check_in_tabu(tabuList,previousNeighboors.get(i))){
                         previousNeighboors.remove(i);
+
+
                     }
                 }
 
+                System.out.println(previousNeighboors);
                 currentSolution = bestSolutionFinder(previousNeighboors);
-
+                
                 if(currentSolution.cost() < bestSolution.cost()){
                     bestSolution = currentSolution;
                 }
                 tabuList.add(currentSolution);
-            }
-        }
-        else {
-            while(time_check!= time_check2 + time_limit && iter_check!= iter_number && nomove_iter != max_nomove_iter){
-                ArrayList<Solution> previousNeighboors = previousSolution.getNeighboors();
-                for(int i =0; i < previousNeighboors.size();i++){
-                    if(check_in_tabu(tabuList,previousNeighboors.get(i))){
-                        previousNeighboors.remove(i);
-                    }
-                }
-
-                currentSolution = bestSolutionFinder(previousNeighboors);
-
-                if(currentSolution.cost() < bestSolution.cost()){
-                    bestSolution = currentSolution;
-                }
-                tabuList.remove();
-                tabuList.add(currentSolution);
+                time_check =(int) date.getTime();
+                iter_check++;
             }
 
         }
+        while(time_check!= time_check2 + time_limit && iter_check!= iter_number && nomove_iter != max_nomove_iter){
+            ArrayList<Solution> previousNeighboors = previousSolution.getNeighboors();
+            for(int i =0; i < previousNeighboors.size();i++){
+                if(check_in_tabu(tabuList,previousNeighboors.get(i))){
+                    previousNeighboors.remove(i);
+                }
+            }
+
+            System.out.println(previousNeighboors);
+            currentSolution = bestSolutionFinder(previousNeighboors);
+
+            if(currentSolution.cost() < bestSolution.cost()){
+                bestSolution = currentSolution;
+            }
+            tabuList.remove();
+            tabuList.add(currentSolution);
+            time_check =(int) date.getTime();
+            iter_check++;
+        }
+
+
         return bestSolution;
 
     }
-    //prend en entrée la liste des anciens voisins et analyse lequel a le meilleur cout et le retourne.
+    //prend en entrée la liste des anciens voisins et analyse le
     private static Solution bestSolutionFinder(ArrayList<Solution> previousNeighboors) {
+
         Solution best = previousNeighboors.get(0);
-        for(int i =1; i< previousNeighboors.size(); i++){
-            if(previousNeighboors.get(i).cost() < best.cost()){
-                best = previousNeighboors.get(i);
+
+        best.setRingCost(ringCost);
+        best.setStarCost(starCost);
+
+        if (previousNeighboors.get(1) == null){
+            best = previousNeighboors.get(0);
+        }
+        else{
+            for(int i =1; i< previousNeighboors.size(); i++){
+
+
+                if(previousNeighboors.get(i).cost() < best.cost()){
+                    best = previousNeighboors.get(i);
+                }
             }
         }
+
+
         return best;
     }
 
