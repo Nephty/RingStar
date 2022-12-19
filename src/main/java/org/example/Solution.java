@@ -106,8 +106,7 @@ public class Solution {
         // fromCost + toCost
         // toCost : when node - 1 == 0 then preceding node is last node in the list ie ringSize
         // Note: node != index -> node = index + 1
-        return getRingEdgeCost(node, (node + 1) % (ringSize() + 1))
-                +  getRingEdgeCost(node - 1 == 0 ? ringSize() : node - 1, node);
+        return getRingEdgeCost(previousNode, node) + getRingEdgeCost(node, nextNode);
     }
 
     public boolean isStarNode(int node) {
@@ -186,9 +185,9 @@ public class Solution {
                             node,
                             node + 1
                     ) - getToPlusFromCost(
-                            i == 0 ? ring.get(ringSize() - 1) : i - 1,
-                            i,
-                            i + 1
+                            i == 0 ? ring.get(ringSize() - 1) : ring.get(i - 1),
+                            ring.get(i),
+                            ring.get(i + 1)
                     );
                     if(costGain < bestCostGain) {
                         bestCostGain = costGain;
@@ -196,7 +195,8 @@ public class Solution {
                     }
                 }
                 Solution neighbour = new Solution(this, GRASP);
-                neighbour.addNodeToRing(node, bestIndex);
+                neighbour.swapNodeToRing(node, bestIndex);
+
                 neighbourhood[k] = neighbour;
                 k++;
             }
@@ -233,6 +233,12 @@ public class Solution {
         this.ring.add(node);
         this.isRing[node - 1] = true;
         this.cost = -1;
+    }
+
+    private void swapNodeToRing(int node, int index) {
+        this.isRing[ring.get(index) - 1] = false;
+        this.isRing[node - 1] = true;
+        this.ring.set(index, node);
     }
 
     private void removeRingNode(int index) {

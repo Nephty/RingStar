@@ -18,12 +18,11 @@ public class Main {
     static ArrayList<ArrayList<Tuple<Integer>>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
 
     public static void main(String[] args) throws FileNotFoundException {
-        /*
+
         for (double i = 0; i <= 0.35 ; i += 0.1) {
-            tryAlpha(i, 10000);
+            tryAlpha(i, 5000);
         }
-        */
-        System.out.println(-1 % 5);
+
 
         //analysePerformance(0, 3);
     }
