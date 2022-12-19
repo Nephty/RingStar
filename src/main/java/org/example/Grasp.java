@@ -2,7 +2,6 @@ package org.example;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Grasp {
@@ -17,8 +16,6 @@ public class Grasp {
     public final int SIZE;
 
     private final ArrayList<ArrayList<Tuple<Integer>>> starOrdered;
-
-    public long movementCount;
 
     public int[][] getStarCost() {
         return starCost;
@@ -244,7 +241,7 @@ public class Grasp {
      * -swap two node in the ring
      *
      * @param solution a solution
-     * @return
+     * @return Best neighbour if none is better, then the entered solution
      */
     private Solution localSearch(Solution solution) {
         for (Solution neighbour : solution.addNodeNeighbourhood()) {
@@ -253,18 +250,22 @@ public class Grasp {
             }
 
         }
-
         for (Solution neighbour : solution.removeNodeNeighbourhood()) {
             if (neighbour.getCost() < solution.getCost()) {
                 solution = neighbour;
             }
         }
-        for (Solution neighbour : solution.swapNodeNeighbourhood()) {
+        for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
             if (neighbour.getCost() < solution.getCost()) {
                 solution = neighbour;
             }
         }
-        movementCount += SIZE + solution.ringSize();
+        for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
+            if (neighbour.getCost() < solution.getCost()) {
+                solution = neighbour;
+            }
+
+        }
         return solution;
     }
 

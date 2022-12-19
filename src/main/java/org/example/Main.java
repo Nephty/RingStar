@@ -18,10 +18,12 @@ public class Main {
     static ArrayList<ArrayList<Tuple<Integer>>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
 
     public static void main(String[] args) throws FileNotFoundException {
-
+        /*
         for (double i = 0; i <= 0.35 ; i += 0.1) {
             tryAlpha(i, 10000);
         }
+        */
+        System.out.println(-1 % 5);
 
         //analysePerformance(0, 3);
     }
@@ -39,7 +41,6 @@ public class Main {
         Instant instant = Instant.now();
         System.out.println(grasp.findSolution(maxTime));
         System.out.println("Calculation time:" + (Instant.now().toEpochMilli() - instant.toEpochMilli()) + " ms");
-        System.out.println("Movement count: " + grasp.movementCount);
     }
 
     public static void tryAlpha(double alpha, int msPerGrasp) throws FileNotFoundException {
