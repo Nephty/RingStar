@@ -29,8 +29,8 @@ public class Solution {
         isRing[0] = true;
     }
 
-    public Solution(Solution solution, Grasp grasp) {
-        this.GRASP = grasp;
+    public Solution(Solution solution) {
+        this.GRASP = solution.GRASP;
         this.ring = new ArrayList<>(solution.getRing());
         this.isRing = new boolean[GRASP.SIZE];
         for (Integer node : ring) {
@@ -158,7 +158,7 @@ public class Solution {
                         bestIndex = j + 1;
                     }
                 }
-                Solution neighbour = new Solution(this, GRASP);
+                Solution neighbour = new Solution(this);
                 neighbour.addNodeToRing(node, bestIndex);
                 neighbourhood[k] = neighbour;
                 k++;
@@ -181,9 +181,9 @@ public class Solution {
 
                 for (int i = 0; i < ringSize() - 1; i++) {
                     final int costGain = getToPlusFromCost(
-                            node == 0 ? ring.get(ringSize() - 1) : node - 1,
+                            i == 0  ? ring.get(ringSize() - 1) : ring.get(i - 1),
                             node,
-                            node + 1
+                            ring.get(i + 1)
                     ) - getToPlusFromCost(
                             i == 0 ? ring.get(ringSize() - 1) : ring.get(i - 1),
                             ring.get(i),
@@ -194,7 +194,7 @@ public class Solution {
                         bestIndex = i;
                     }
                 }
-                Solution neighbour = new Solution(this, GRASP);
+                Solution neighbour = new Solution(this);
                 neighbour.swapNodeToRing(node, bestIndex);
 
                 neighbourhood[k] = neighbour;
@@ -208,7 +208,7 @@ public class Solution {
     public Solution[] removeNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[ring.size()];
         for (int i = 0; i < ring.size(); i++) {
-            Solution neighbour = new Solution(this, GRASP);
+            Solution neighbour = new Solution(this);
             neighbour.removeRingNode(i);
             neighbourhood[i] = neighbour;
         }
@@ -218,7 +218,7 @@ public class Solution {
     public Solution[] swapRingNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[ring.size()];
         for (int i = 0; i < ring.size(); i++) {
-            Solution neighbour = new Solution(this, GRASP);
+            Solution neighbour = new Solution(this);
             neighbour.swapRingNode(i);
             neighbourhood[i] = neighbour;
         }
@@ -226,11 +226,8 @@ public class Solution {
         //TODO fix redundant solution problem
     }
 
-    private void addNodeToRing(int node, int index) {
-        if (index == 0) {
-            this.ring.add(0, node);
-        }
-        this.ring.add(node);
+    public void addNodeToRing(int node, int index) {
+        this.ring.add(index, node);
         this.isRing[node - 1] = true;
         this.cost = -1;
     }

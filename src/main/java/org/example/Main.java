@@ -19,12 +19,13 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        for (double i = 0; i <= 0.35 ; i += 0.1) {
-            tryAlpha(i, 5000);
+        for (double i = 0.8; i < 1.05 ; i += 0.1) {
+            //tryAlpha(i, 5000);
+            System.out.println("\n");
         }
 
 
-        //analysePerformance(0, 3);
+        analysePerformance(0, 10);
     }
 
     public static void runGrasp(int maxTime) throws FileNotFoundException {
@@ -55,14 +56,13 @@ public class Main {
                     matrixReader.starCost,
                     matrixReader.length_of_matrix
             );
-            grasp.i++;
 
             output.append("\ndata").append(i).append(":\n");
             output.append(grasp.findSolution(msPerGrasp).toString()).append("\n");
-            System.out.println("data" + i + " done");
         }
         final String filename = "src/main/resources/results_alpha_0.0" + (int)(alpha * 10) + ".dat";
         saveFile(filename, output.toString());
+        System.out.println("file saved for alpha " + alpha);
     }
 
     public static void saveFile(String filename, String content) {

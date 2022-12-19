@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Grasp {
-    public int i = 0;
     private final double ALPHA;
     private final int maxIterations;
 
@@ -58,11 +57,12 @@ public class Grasp {
             if (cost < bestCost) {
                 bestCost = cost;
                 bestSolution = solution;
-                System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
+                //System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
             }
 
 
         }
+        System.out.println("Best solution : " + bestSolution.getCost());
         return bestSolution;
 
     }
@@ -82,13 +82,14 @@ public class Grasp {
                     bestCost = cost;
                     bestSolution = solution;
                     solutions.add(solution);
-                    System.out.println("Iteration " + (i + j*1000)+ " bestCost: " + bestSolution.getCost());
+                    //System.out.println("Iteration " + (i + j*1000)+ " bestCost: " + bestSolution.getCost());
                 }
 
                 j++;
             }
         }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
         System.out.println("maxIter = " + j*1000);
+        System.out.println("Best solution = " + solutions.stream().min(Solution::compareTo).get().getCost());
         return solutions.stream().min(Solution::compareTo).get();
 
     }
@@ -171,7 +172,7 @@ public class Grasp {
 
         for (int i = 1; i < SIZE; i++) { // On commence à 1 parce que le premier noeud est toujours dans le ring (depot)
             int node = i + 1;
-            if (!solution.getIsRing()[node - 1]) { // On veut faire le test que sur les noeuds qui ne sont pas déjà dans le ring
+            if (solution.isStarNode(node)) { // On veut faire le test que sur les noeuds qui ne sont pas déjà dans le ring
                 int[] estimation = estimation(node, solution);
                 estimationList.add(new Triplet<>(node, estimation[0], estimation[1]));
                 if (estimation[0] < min) {
@@ -194,6 +195,7 @@ public class Grasp {
 
     private Solution constructSolution() {
         final int MaxIter = 50; // Nombre d'itérations maximum pour la construction de la solution
+
         Solution bestSolution = new Solution(this);
 
 
@@ -216,11 +218,31 @@ public class Grasp {
                     }
                     Solution newSolution = new Solution(newRing, this);
 
+                    //Solution newS = new Solution(tmpSolution);
+                    //newS.addNodeToRing(node.getA(), node.getB()); node B needs to be the index of the node not the one on its right
                     if (newSolution.getCost() < tmpSolution.getCost()) {
                         tmpSolution = newSolution;
                     } else if (newRing.size() > 3) {
                         // TODO : améliorer ce paramètre
                         searching = false;
+                    } else {
+                        while (restrictedCandidateList.size() > 1 && newSolution.getCost() > tmpSolution.getCost()) {
+                            restrictedCandidateList.remove(node);
+                            node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
+                            newRing = new ArrayList<>(tmpSolution.getRing());
+                            if (node.getB() == 0) {
+                                newRing.add(node.getA());
+                            } else {
+                                newRing.add(node.getB(), node.getA());
+                            }
+                            newSolution = new Solution(newRing, this);
+
+                        }
+                        if(newSolution.getCost() < tmpSolution.getCost()) {
+                            tmpSolution = newSolution;
+                        } else {
+                            searching = false;
+                        }
                     }
                 }
             }
