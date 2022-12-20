@@ -5,12 +5,10 @@ Teacher's solution : 1278 (ring = 100%)
 best solution : 1404 (ring = 100%)
 Difference : 9.39%
 
-
 Data2 :
 Teacher's solution : 2113 (ring = 33.33%)
 best solution : 2122 (ring = 33.33%)
 Difference : 0.4%
-
 
 Data3 :
 Teacher's solution : 1244 (ring = 11.76%)

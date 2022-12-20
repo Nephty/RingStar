@@ -40,9 +40,17 @@ public class Solution {
 
     @Override
     public String toString() {
-        return "Solution {cost = " + this.getCost() +
-                ", ringSize = " + this.ringSize() +
-                ", size = " + GRASP.SIZE + "}" ;
+        StringBuilder BobTheBuilder = new StringBuilder();
+        BobTheBuilder.append("Ring: ").append(ringSize()).append("\n");
+        for(Integer node : ring) {
+            BobTheBuilder.append(node).append(" ");
+        }
+        BobTheBuilder.append("\nStar: ").append("\n");
+        for (Integer[] node : star) {
+            BobTheBuilder.append(node[0]).append(" ").append(node[1]).append("\n");
+        }
+        BobTheBuilder.append("Cost: ").append(getCost());
+        return BobTheBuilder.toString();
     }
 
     public int compareTo(Solution solution) {

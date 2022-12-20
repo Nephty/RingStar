@@ -49,7 +49,7 @@ public class Main {
         );
         Instant instant = Instant.now();
         System.out.println(grasp.findSolution(maxTime));
-        System.out.println("Calculation time:" + (Instant.now().toEpochMilli() - instant.toEpochMilli()) + " ms");
+        //System.out.println("Calculation time:" + (Instant.now().toEpochMilli() - instant.toEpochMilli()) + " ms");
     }
 
     public static void tryAlpha(double alpha, int msPerGrasp) throws FileNotFoundException {
