@@ -18,22 +18,31 @@ public class Main {
     static ArrayList<ArrayList<Tuple<Integer>>> starOrdered; // matrice 2D de tuple (value, j) qui sont les couts des
 
     public static void main(String[] args) throws FileNotFoundException {
+        ;
 
+        int maxTimeSeconds = 120;
+        String dataSet = "data1";
+        runGrasp(maxTimeSeconds*1000,dataSet);
+        /*
+        for (double i = 0; i <= 0.35 ; i += 0.1) {
+            tryAlpha(i, 5000);
         for (double i = 0.8; i < 1.05 ; i += 0.1) {
             //tryAlpha(i, 5000);
             System.out.println("\n");
         }
+         */
 
 
-        analysePerformance(0, 10);
+        // analysePerformance(0, 10);
     }
 
-    public static void runGrasp(int maxTime) throws FileNotFoundException {
-        MatrixReader matrixReader = new MatrixReader("src/main/resources/data1.dat");
+    public static void runGrasp(int maxTime,String dataSet) throws FileNotFoundException {
+        System.out.println("Running GRASP on " + dataSet + " for " + maxTime/1000 + "s");
+        MatrixReader matrixReader = new MatrixReader("src/main/resources/"+dataSet+".dat");
         matrixReader.matrixRead();
         Grasp grasp = new Grasp(
                 3000,
-                0.9,
+                0.8,
                 matrixReader.ringCost,
                 matrixReader.starCost,
                 matrixReader.length_of_matrix

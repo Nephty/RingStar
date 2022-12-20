@@ -1,4 +1,4 @@
-120 ms de temps minimum, alpha = 0.4
+120 s de temps minimum, alpha = 0.4
 
 Data1 :
 Teacher's solution : 1278 (ring = 100%)

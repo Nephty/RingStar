@@ -1,0 +1,48 @@
+120 s de temps minimum, alpha = 0.8
+
+Data1 :
+Teacher's solution : 1278 (ring = 100%)
+best solution : 1404 (ring = 100%)
+Difference : 9.39%
+
+
+Data2 :
+Teacher's solution : 2113 (ring = 33.33%)
+best solution : 2122 (ring = 33.33%)
+Difference : 0.4%
+
+
+Data3 :
+Teacher's solution : 1244 (ring = 11.76%)
+best solution : 1244 (ring = 11.76%)
+Difference : 0%
+
+Data4 :
+Teacher's solution : 1614 (ring = 100%)
+best solution : 1935 (ring = 100%)
+Difference : 18.09%
+
+Data5 :
+Teacher's solution : 2504 (ring = 42.11%)
+best solution : 2607 (ring = 39.47%)
+Difference : 4.03%
+
+Data6 :
+Teacher's solution : 1710 (ring = 15.79%)
+best solution : 1722 (ring = 15.79%)
+Difference : 0.69%
+
+Data7 :
+Teacher's solution : 63 846 (ring = 100%)
+best solution : 88356 (ring = 100%)
+Difference : 32.21%
+
+Data8 :
+Teacher's solution : 115 388 (ring = 55%)
+best solution : 125188 (ring = 43%)
+Difference : 8.15%
+
+Data9 :
+Teacher's solution : 94 265 (ring = 21%)
+best solution : 94 787 (ring = 20%)
+Difference : 0.55%

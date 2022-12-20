@@ -68,13 +68,14 @@ public class Grasp {
     }
 
     public Solution findSolution(long maxTime) {
+        // TODO : problème avec le maxtime qui fait toujours 100000 itération.
         Instant start = Instant.now();
         Solution bestSolution = new Solution(this);
         int bestCost = Integer.MAX_VALUE;
         ArrayList<Solution> solutions = new ArrayList<>();
         int j = 0;
         do {
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 100; i++) {
                 Solution solution = constructSolution(); // Construct a greedy randomised solution
                 Solution solution_local = localSearch(solution); // Recherche localement autour de la solution
                 int cost = solution_local.getCost();
@@ -82,13 +83,12 @@ public class Grasp {
                     bestCost = cost;
                     bestSolution = solution;
                     solutions.add(solution);
-                    //System.out.println("Iteration " + (i + j*1000)+ " bestCost: " + bestSolution.getCost());
+                    System.out.println("Iteration " + (i + j * 100) + " bestCost: " + bestSolution.getCost());
                 }
-
-                j++;
             }
-        }while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
-        System.out.println("maxIter = " + j*1000);
+            j++;
+        } while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
+        System.out.println("maxIter = " + j * 100);
         System.out.println("Best solution = " + solutions.stream().min(Solution::compareTo).get().getCost());
         return solutions.stream().min(Solution::compareTo).get();
 
@@ -97,30 +97,28 @@ public class Grasp {
 
     /**
      * Heuristique permettant d'estimer le coût d'ajout d'un nœud à une solution.
-     * → voir explication de la construction du LCR (Liste des candidats restrainte)
+     * → voir explication de la construction du LCR (Liste des candidats restraints)
      *
      * @param node Le nœud à estimer
      * @return Le coût estimé
      */
     public int[] estimation(int node, Solution solution) {
-        // TODO : trouver un moyen de prendre en compte les chemins du star
-        // Implement the estimation function
         int[] minIncrement = minIncrement(node, solution);
-
-        //minIncrement[0] += meanStar(node,solution);
-        // TODO : regarder si y'a pas moyen de faire mieux parce que ça a pas l'air ouf.
+        //minIncrement[0] += (int) meanStar(node, solution);
         return minIncrement;
     }
 
 
     public double meanStar(int node, Solution solution) {
         double mean = 0;
+        int count = 0;
         for (int i = 0; i < SIZE; i++) {
             if (!solution.getIsRing()[i]) {
-                mean += starCost[node-1][i];
+                mean += starCost[node - 1][i];
+                count++;
             }
         }
-        return mean / SIZE;
+        return mean / count;
 
     }
 
@@ -167,7 +165,7 @@ public class Grasp {
         double min = Integer.MAX_VALUE;
         double max = Integer.MIN_VALUE;
 
-        ArrayList<Triplet<Integer,Integer,Integer>> estimationList = new ArrayList<>();
+        ArrayList<Triplet<Integer, Integer, Integer>> estimationList = new ArrayList<>();
         // Contient les triplets (a, b, c) où a = le numéro du noeud et b = son estimation et c l'indice du noeud de droite dans le ring
 
         for (int i = 1; i < SIZE; i++) { // On commence à 1 parce que le premier noeud est toujours dans le ring (depot)
@@ -188,7 +186,7 @@ public class Grasp {
 
 
         // Retourne le minIncrement max et min
-        return (ArrayList<Tuple<Integer>>)  estimationList.stream().filter(triplet -> triplet.getValue1() <= maxBoundary)
+        return (ArrayList<Tuple<Integer>>) estimationList.stream().filter(triplet -> triplet.getValue1() <= maxBoundary)
                 .map(triplet -> new Tuple<>(triplet.getValue0(), triplet.getValue2())).collect(Collectors.toList());
 
     }
@@ -202,7 +200,7 @@ public class Grasp {
         for (int i = 0; i < MaxIter; i++) {
             Solution tmpSolution = new Solution(this);
             boolean searching = true;
-            while (searching){
+            while (searching) {
                 ArrayList<Tuple<Integer>> restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
                 if (restrictedCandidateList.isEmpty()) {
                     searching = false;
@@ -222,9 +220,6 @@ public class Grasp {
                     //newS.addNodeToRing(node.getA(), node.getB()); node B needs to be the index of the node not the one on its right
                     if (newSolution.getCost() < tmpSolution.getCost()) {
                         tmpSolution = newSolution;
-                    } else if (newRing.size() > 3) {
-                        // TODO : améliorer ce paramètre
-                        searching = false;
                     } else {
                         while (restrictedCandidateList.size() > 1 && newSolution.getCost() > tmpSolution.getCost()) {
                             restrictedCandidateList.remove(node);
@@ -238,7 +233,7 @@ public class Grasp {
                             newSolution = new Solution(newRing, this);
 
                         }
-                        if(newSolution.getCost() < tmpSolution.getCost()) {
+                        if (newSolution.getCost() < tmpSolution.getCost()) {
                             tmpSolution = newSolution;
                         } else {
                             searching = false;
@@ -247,7 +242,7 @@ public class Grasp {
                 }
             }
 
-            if (tmpSolution.getCost() < bestSolution.getCost()){
+            if (tmpSolution.getCost() < bestSolution.getCost()) {
                 bestSolution = tmpSolution;
             }
         }
@@ -286,10 +281,47 @@ public class Grasp {
             if (neighbour.getCost() < solution.getCost()) {
                 solution = neighbour;
             }
-
         }
         return solution;
     }
+
+
+    /*
+   private Solution localSearch(Solution solution) {
+        boolean searching = true;
+        Solution previousSolution = solution;
+        // TODO : prendre le minimum des 4 voisins
+        while (searching) {
+            for (Solution neighbour : solution.addNodeNeighbourhood()) {
+                if (neighbour.getCost() < solution.getCost()) {
+                    solution = neighbour;
+                }
+
+            }
+            for (Solution neighbour : solution.removeNodeNeighbourhood()) {
+                if (neighbour.getCost() < solution.getCost()) {
+                    solution = neighbour;
+                }
+            }
+            for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
+                if (neighbour.getCost() < solution.getCost()) {
+                    solution = neighbour;
+                }
+            }
+            for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
+                if (neighbour.getCost() < solution.getCost()) {
+                    solution = neighbour;
+                }
+            }
+            if (previousSolution.equals(solution)) {
+                searching = false;
+            } else {
+                previousSolution = solution;
+            }
+        }
+        return solution;
+    }
+     */
 
 
 }
