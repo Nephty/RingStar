@@ -48,7 +48,12 @@ public class Main {
                 matrixReader.length_of_matrix
         );
         Instant instant = Instant.now();
-        System.out.println(grasp.findSolution(maxTime));
+        Solution solution = grasp.findSolution(maxTime);
+        System.out.println(solution);
+
+        //Save
+        String filename = "grasp/src/main/results/" + dataSet + ".txt";
+        saveFile(filename, solution.toString());
         //System.out.println("Calculation time:" + (Instant.now().toEpochMilli() - instant.toEpochMilli()) + " ms");
     }
 
@@ -76,7 +81,8 @@ public class Main {
 
     public static void saveFile(String filename, String content) {
         try {
-            FileWriter myWriter = new FileWriter(filename);
+            File file = new File(filename);
+            FileWriter myWriter = new FileWriter(file);
             myWriter.write(content);
             myWriter.close();
         } catch (IOException e) {
