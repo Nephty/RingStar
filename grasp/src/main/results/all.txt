@@ -1,0 +1,46 @@
+Running GRASP on all datasets for 300s with alpha = 0.8
+Dataset 1 : 
+Teacher value : 1278 (ring = 100.0%)
+Our value : 1341 (ring = 100%)
+Difference : 4.8%
+ 
+Dataset 2 : 
+Teacher value : 2113 (ring = 33.33%)
+Our value : 2113 (ring = 33.33%)
+Difference : 0%
+ 
+Dataset 3 : 
+Teacher value : 1244 (ring = 11.76%)
+Our value : 1244 (ring = 9.8%)
+Difference : 0%
+ 
+Dataset 4 : 
+Teacher value : 1614 (ring = 100.0%)
+Our value : 1907 (ring = 98.68%)
+Difference : 16.64%
+ 
+Dataset 5 : 
+Teacher value : 2504 (ring = 42.11%)
+Our value : 2555 (ring = 39.47%)
+Difference : 2.02%
+ 
+Dataset 6 : 
+Teacher value : 1710 (ring = 15.79%)
+Our value : 1710 (ring = 15.79%)
+Difference : 0%
+ 
+Dataset 7 : 
+Teacher value : 63846 (ring = 100.0%)
+Our value : 82497 (ring = 98%)
+Difference : 25.49%
+ 
+Dataset 8 : 
+Teacher value : 114388 (ring = 55.0%)
+Our value : 124332 (ring = 48%)
+Difference : 8.33%
+ 
+Dataset 9 : 
+Teacher value : 94265 (ring = 21.0%)
+Our value : 94690 (ring = 21%)
+Difference : 0.45%
+ 

@@ -233,7 +233,16 @@ public class Grasp {
         return bestSolution;
     }
 
-
+    /**
+     * Movement:
+     * -add a node to the ring
+     * -remove a node from the ring
+     * -swap two node in the ring
+     * - swap a node in the star and in the ring
+     *
+     * @param solution a solution
+     * @return Best neighbour if none is better, then the entered solution
+     */
     private Solution localSearch(Solution solution) {
         Solution bestNeighbour = solution;
         do {
@@ -250,8 +259,10 @@ public class Grasp {
 
             }
             for (Solution neighbour : solution.removeNodeNeighbourhood()) {
-                if (neighbour.getCost() < bestNeighbour.getCost()) {
-                    solution = neighbour;
+                if (neighbour != null) {
+                    if (neighbour.getCost() < bestNeighbour.getCost()) {
+                        solution = neighbour;
+                    }
                 }
             }
             for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
@@ -260,8 +271,10 @@ public class Grasp {
                 }
             }
             for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
-                if (neighbour.getCost() < bestNeighbour.getCost()) {
-                    solution = neighbour;
+                if (neighbour != null) {
+                    if (neighbour.getCost() < bestNeighbour.getCost()) {
+                        solution = neighbour;
+                    }
                 }
             }
 

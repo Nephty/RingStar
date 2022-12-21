@@ -6,18 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Main {
+    public static final int[] teacherValues = {1278, 2113, 1244, 1614, 2504, 1710, 63846, 114388, 94265};
+    public static final double[] teacherRing = {100, 33.33, 11.76, 100, 42.11, 15.79, 100, 55, 21};
+
     public static void main(String[] args) throws FileNotFoundException {
-        int maxTimeSeconds = 120;
-        String dataSet = "data9";
+        int maxTimeSeconds = 300;
+        String dataSet = "data2";
         double alpha = 0.8;
         runGrasp(maxTimeSeconds * 1000, dataSet, alpha);
     }
 
     /**
      * Run grasp on the given dataset
+     *
      * @param maxTime Time to run the algorithm (in ms)
      * @param dataSet The name of the dataSet in the folder src/main/resources/
-     * @param alpha The value of alpha
+     * @param alpha   The value of alpha
      * @throws FileNotFoundException If the file is not found
      */
     public static void runGrasp(int maxTime, String dataSet, double alpha) throws FileNotFoundException {
@@ -40,8 +44,9 @@ public class Main {
 
     /**
      * Save the given string in the given file
+     *
      * @param filename The name of the file (with the path)
-     * @param content The content to save.
+     * @param content  The content to save.
      */
     public static void saveFile(String filename, String content) {
         try {
@@ -53,5 +58,34 @@ public class Main {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+
+    public static void testAllSet(int timePerSet, double alpha) throws FileNotFoundException {
+        StringBuilder bobTheBuilder = new StringBuilder();
+        bobTheBuilder.append("Running GRASP on all datasets for ").append(timePerSet).append("s").append(" with alpha = ").append(alpha).append("\n");
+        for (int i = 1; i <= 1; i++) {
+            bobTheBuilder.append("Dataset ").append(i).append(" : \n")
+                    .append("Teacher value : ").append(teacherValues[i - 1])
+                    .append(" (ring = ").append(teacherRing[i - 1]).append("%)\n");
+
+            System.out.println("Running GRASP on data " + i + " for " + timePerSet + "s");
+            MatrixReader matrixReader = new MatrixReader("grasp/src/main/resources/data" + i + ".dat");
+            matrixReader.matrixRead();
+            Grasp grasp = new Grasp(
+                    alpha,
+                    matrixReader.ringCost,
+                    matrixReader.starCost,
+                    matrixReader.length_of_matrix
+            );
+            Solution solution = grasp.findSolution(timePerSet * 1000);
+
+            bobTheBuilder.append("Our value : ").append(solution.getCost())
+                    .append("\n \n");
+            //Save
+            String filename = "grasp/src/main/results/data" + i + ".txt";
+            saveFile(filename, solution.toString());
+        }
+        saveFile("grasp/src/main/results/all3.txt", bobTheBuilder.toString());
     }
 }

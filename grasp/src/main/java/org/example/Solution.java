@@ -15,7 +15,8 @@ public class Solution {
 
     /**
      * Constructor of the class Solution. It takes the GRASP object to use its attributes.
-     * @param ring The ring of the solution
+     *
+     * @param ring  The ring of the solution
      * @param grasp The GRASP object
      */
     public Solution(ArrayList<Integer> ring, Grasp grasp) {
@@ -29,6 +30,7 @@ public class Solution {
 
     /**
      * Constructor of an initial Solution with only the depot in the ring and the rest in the star.
+     *
      * @param grasp The GRASP object
      */
     public Solution(Grasp grasp) {
@@ -40,6 +42,7 @@ public class Solution {
 
     /**
      * Safe copy of a Solution.
+     *
      * @param solution The solution to copy
      */
     public Solution(Solution solution) {
@@ -68,6 +71,7 @@ public class Solution {
 
     /**
      * Compare the cost of the current solution with the cost of the solution given in parameter.
+     *
      * @param solution The solution to compare with
      * @return -1 if the current solution is better, 0 if they are equal, 1 if the solution given in parameter is better
      */
@@ -119,6 +123,13 @@ public class Solution {
      * Otherwise, it will just return the cost
      */
     public int getCost() {
+        try {
+            if (!isRing[0]) {
+                throw new Exception("The depot is not in the ring");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (cost == -1) {
             calculateCost();
         }
@@ -143,7 +154,7 @@ public class Solution {
     }
 
     /**
-     *  Returns true if the node is in the ring, false otherwise
+     * Returns true if the node is in the ring, false otherwise
      */
     public boolean isStarNode(int node) {
         return !isRing[node - 1];
@@ -151,6 +162,7 @@ public class Solution {
 
     /**
      * Getter for the ring attribute.
+     *
      * @return the ring of the solution
      */
     public ArrayList<Integer> getRing() {
@@ -168,7 +180,7 @@ public class Solution {
      * If the stars places haven't been calculated, calculates them and return them
      * otherwise it will just return the star's place
      */
-    public ArrayList<Integer[]>  getStar() {
+    public ArrayList<Integer[]> getStar() {
         if (this.star == null) {
             calculateStarSolution();
         }
@@ -182,6 +194,7 @@ public class Solution {
      * Returns the neighbours of this solution using the movement of adding a node to the ring
      * Checks for the best place to put a starNode by looking at the difference between the ring node's edges cost
      * and the star node's edges cost if it were to be in the ring node's place.
+     *
      * @return Array of solution containing the neighbours
      */
     public Solution[] addNodeNeighbourhood() {
@@ -220,12 +233,13 @@ public class Solution {
      * It will check the best position to put a starNode by looking at the difference between the ring node's edges cost
      * and the star node's edges cost if it were to be in the ring node's place. Doesn't take into account the starCost
      * the ring node would add to the solution
+     *
      * @return Array of solution containing the neighbours
      */
     public Solution[] swapStarRingNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[GRASP.SIZE - ring.size()];
         int k = 0;
-        for (int node = 1; node <= GRASP.SIZE; node++) {
+        for (int node = 2; node <= GRASP.SIZE; node++) {
             if (isStarNode(node)) {
                 //default cost if inserted at last index
                 int bestCostGain = this.getAdjacentEdgesCostSum(ring.get(ringSize() - 2), node, ring.get(0)) -
@@ -234,18 +248,20 @@ public class Solution {
                 // check each position in the ring to find the least expensive
 
                 for (int i = 0; i < ringSize() - 1; i++) {
-                    final int costGain = getAdjacentEdgesCostSum(
-                            i == 0  ? ring.get(ringSize() - 1) : ring.get(i - 1),
-                            node,
-                            ring.get(i + 1)
-                    ) - getAdjacentEdgesCostSum(
-                            i == 0 ? ring.get(ringSize() - 1) : ring.get(i - 1),
-                            ring.get(i),
-                            ring.get(i + 1)
-                    );
-                    if (costGain < bestCostGain) {
-                        bestCostGain = costGain;
-                        bestIndex = i;
+                    if (!(this.ring.get(i) == 1)) {
+                        final int costGain = getAdjacentEdgesCostSum(
+                                i == 0 ? ring.get(ringSize() - 1) : ring.get(i - 1),
+                                node,
+                                ring.get(i + 1)
+                        ) - getAdjacentEdgesCostSum(
+                                i == 0 ? ring.get(ringSize() - 1) : ring.get(i - 1),
+                                ring.get(i),
+                                ring.get(i + 1)
+                        );
+                        if (costGain < bestCostGain) {
+                            bestCostGain = costGain;
+                            bestIndex = i;
+                        }
                     }
                 }
                 Solution neighbour = new Solution(this);
@@ -261,20 +277,25 @@ public class Solution {
 
     /**
      * Returns the neighbours of this solution using the movement of removing a node from the ring
+     *
      * @return Array of solution containing the neighbours
      */
-    public Solution[] removeNodeNeighbourhood() {
-        Solution[] neighbourhood = new Solution[ring.size()];
+    public ArrayList<Solution> removeNodeNeighbourhood() {
+        ArrayList<Solution> neighbourhood = new ArrayList<>();
         for (int i = 0; i < ring.size(); i++) {
-            Solution neighbour = new Solution(this);
-            neighbour.removeRingNode(i);
-            neighbourhood[i] = neighbour;
+            if (this.ring.get(i) != 1) {
+                Solution neighbour = new Solution(this);
+                neighbour.removeRingNode(i);
+                neighbourhood.add(neighbour);
+            }
+
         }
         return neighbourhood;
     }
 
     /**
      * Returns the neighbours of this solution using the movement of swapping two ring nodes places
+     *
      * @return Array of solution containing the neighbours
      */
     public Solution[] swapRingNodeNeighbourhood() {
@@ -289,7 +310,8 @@ public class Solution {
 
     /**
      * Add a star node to the ring
-     * @param node Star node to be added
+     *
+     * @param node  Star node to be added
      * @param index index in the ring to insert it
      */
     public void addNodeToRing(int node, int index) {
@@ -301,18 +323,23 @@ public class Solution {
 
     /**
      * Swap a star node and a ring node
-     * @param node Star node to be put in the ring
+     *
+     * @param node  Star node to be put in the ring
      * @param index Index of the ring node to remove
      */
     private void swapNodeToRing(int node, int index) {
-        this.isRing[ring.get(index) - 1] = false;
-        this.isRing[node - 1] = true;
-        this.ring.set(index, node);
-        this.star = null;
+        if (this.ring.get(index) != 1) {
+            this.isRing[this.ring.get(index) - 1] = false;
+            this.ring.set(index, node);
+            this.isRing[node - 1] = true;
+            this.cost = -1;
+            this.star = null;
+        }
     }
 
     /**
      * Remove a node from the ring
+     *
      * @param index Index of the node to be removed
      */
     private void removeRingNode(int index) {
@@ -324,6 +351,7 @@ public class Solution {
 
     /**
      * Swap two node in the ring
+     *
      * @param index Index of the node to be swapped
      *              This node will be swapped with the one preceding it
      */
