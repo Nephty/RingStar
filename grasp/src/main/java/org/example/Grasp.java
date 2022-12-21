@@ -70,27 +70,22 @@ public class Grasp {
     public Solution findSolution(long maxTime) {
         // TODO : problème avec le maxtime qui fait toujours 100000 itération.
         Instant start = Instant.now();
-        Solution bestSolution = new Solution(this);
-        int bestCost = Integer.MAX_VALUE;
-        ArrayList<Solution> solutions = new ArrayList<>();
+        Solution bestSolution = constructSolution();
         int j = 0;
         do {
             for (int i = 0; i < 100; i++) {
-                Solution solution = constructSolution(); // Construct a greedy randomised solution
-                Solution solution_local = localSearch(solution); // Recherche localement autour de la solution
-                int cost = solution_local.getCost();
-                if (cost < bestCost) {
-                    bestCost = cost;
+                // Construct a greedy randomised solution and do a local search to find a local minimum
+                Solution solution = localSearch(constructSolution());
+                if (solution.getCost() < bestSolution.getCost()) {
                     bestSolution = solution;
-                    solutions.add(solution);
                     System.out.println("Iteration " + (i + j * 100) + " bestCost: " + bestSolution.getCost());
                 }
             }
             j++;
         } while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
         System.out.println("maxIter = " + j * 100);
-        System.out.println("Best solution = " + solutions.stream().min(Solution::compareTo).get().getCost());
-        return solutions.stream().min(Solution::compareTo).get();
+        System.out.println("Best solution = " + bestSolution.getCost());
+        return bestSolution;
 
     }
 

@@ -110,7 +110,7 @@ public class Solution {
      * @param node A node nothing to say
      * @return Already said above
      */
-    private int getToPlusFromCost(int previousNode, int node, int nextNode) {
+    private int getAdjacentEdgesCostSum(int previousNode, int node, int nextNode) {
         // fromCost + toCost
         // toCost : when node - 1 == 0 then preceding node is last node in the list ie ringSize
         // Note: node != index -> node = index + 1
@@ -155,15 +155,19 @@ public class Solution {
         int k = 0;
         for (int node = 1; node <= GRASP.SIZE; node++) {
             if (isStarNode(node)) {
-                // default best is the position before the first node
-                int bestCost = this.getRingEdgeCost(node, ring.get(0));
-                int bestIndex = 0;
+                //default cost if inserted at last index
+                int bestCost = this.getAdjacentEdgesCostSum(ring.get(ringSize() - 2), node, ring.get(0));
+                int bestIndex = ringSize() - 1;
                 // check each position in the ring to find the least expensive
-                for (int j = 0; j < ring.size(); j++) {
-                    final int cost = this.getRingEdgeCost(ring.get(j), node);
+                for (int j = 0; j < ring.size() - 1; j++) {
+                    final int cost = this.getAdjacentEdgesCostSum(
+                            j == 0 ? ring.get(ringSize() - 1) : ring.get(j - 1),
+                            node,
+                            ring.get(j + 1)
+                    );
                     if (cost < bestCost) {
                         bestCost = cost;
-                        bestIndex = j + 1;
+                        bestIndex = j;
                     }
                 }
                 Solution neighbour = new Solution(this);
@@ -174,7 +178,7 @@ public class Solution {
 
         }
         return neighbourhood;
-    } //TODO check for cost from added to next and previous to added
+    }
 
     public Solution[] swapStarRingNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[GRASP.SIZE - ring.size()];
@@ -182,17 +186,17 @@ public class Solution {
         for (int node = 1; node <= GRASP.SIZE; node++) {
             if (isStarNode(node)) {
                 //default cost if inserted at last index
-                int bestCostGain = this.getToPlusFromCost(ring.get(ringSize() - 2), node, ring.get(0)) -
-                        this.getToPlusFromCost(ring.get(ringSize() - 2), ring.get(ringSize() - 1), ring.get(0));
+                int bestCostGain = this.getAdjacentEdgesCostSum(ring.get(ringSize() - 2), node, ring.get(0)) -
+                        this.getAdjacentEdgesCostSum(ring.get(ringSize() - 2), ring.get(ringSize() - 1), ring.get(0));
                 int bestIndex = ringSize() - 1;
                 // check each position in the ring to find the least expensive
 
                 for (int i = 0; i < ringSize() - 1; i++) {
-                    final int costGain = getToPlusFromCost(
+                    final int costGain = getAdjacentEdgesCostSum(
                             i == 0  ? ring.get(ringSize() - 1) : ring.get(i - 1),
                             node,
                             ring.get(i + 1)
-                    ) - getToPlusFromCost(
+                    ) - getAdjacentEdgesCostSum(
                             i == 0 ? ring.get(ringSize() - 1) : ring.get(i - 1),
                             ring.get(i),
                             ring.get(i + 1)
