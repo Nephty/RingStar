@@ -13,6 +13,11 @@ public class Solution {
 
     private final Grasp GRASP;
 
+    /**
+     * Constructor of the class Solution. It takes the GRASP object to use its attributes.
+     * @param ring The ring of the solution
+     * @param grasp The GRASP object
+     */
     public Solution(ArrayList<Integer> ring, Grasp grasp) {
         this.GRASP = grasp;
         this.ring = ring;
@@ -22,6 +27,10 @@ public class Solution {
         }
     }
 
+    /**
+     * Constructor of an initial Solution with only the depot in the ring and the rest in the star.
+     * @param grasp The GRASP object
+     */
     public Solution(Grasp grasp) {
         this.GRASP = grasp;
         this.ring = new ArrayList<>(List.of(1));
@@ -29,6 +38,10 @@ public class Solution {
         isRing[0] = true;
     }
 
+    /**
+     * Safe copy of a Solution.
+     * @param solution The solution to copy
+     */
     public Solution(Solution solution) {
         this.GRASP = solution.GRASP;
         this.ring = new ArrayList<>(solution.getRing());
@@ -42,7 +55,7 @@ public class Solution {
     public String toString() {
         StringBuilder BobTheBuilder = new StringBuilder();
         BobTheBuilder.append("Ring: ").append(ringSize()).append("\n");
-        for(Integer node : ring) {
+        for (Integer node : ring) {
             BobTheBuilder.append(node).append(" ");
         }
         BobTheBuilder.append("\nStar: ").append("\n");
@@ -53,6 +66,11 @@ public class Solution {
         return BobTheBuilder.toString();
     }
 
+    /**
+     * Compare the cost of the current solution with the cost of the solution given in parameter.
+     * @param solution The solution to compare with
+     * @return -1 if the current solution is better, 0 if they are equal, 1 if the solution given in parameter is better
+     */
     public int compareTo(Solution solution) {
         return Integer.compare(this.getCost(), solution.getCost());
     }
@@ -67,10 +85,12 @@ public class Solution {
         ArrayList<Integer[]> starSolution = getStar();
         for (Integer[] i : starSolution) {
             this.cost += GRASP.getStarCost()[i[0] - 1][i[1] - 1];
-            // System.out.println("Star cost ("+i[0]+","+i[1]+"): " + starCost[i[0]-1][i[1]-1]);
         }
     }
 
+    /**
+     * Find the nearest node in the ring to all the nodes in the star. (using starOrdered)
+     */
     private void calculateStarSolution() {
         boolean[] ringNodes = new boolean[GRASP.SIZE];
         for (Integer integer : ring) {
@@ -94,6 +114,10 @@ public class Solution {
         this.star = res;
     }
 
+    /**
+     * If the cost hasn't been calculated, calculates it and returns it.
+     * Otherwise, it will just return the cost
+     */
     public int getCost() {
         if (cost == -1) {
             calculateCost();
@@ -103,9 +127,6 @@ public class Solution {
 
     /**
      * Returns the cost to go from nodeA to nodeB. The cost is the ring cost
-     * @param nodeA
-     * @param nodeB
-     * @return
      */
     public int getRingEdgeCost(int nodeA, int nodeB) {
         return GRASP.getRingCost()[nodeA - 1][nodeB - 1];
@@ -113,8 +134,6 @@ public class Solution {
 
     /**
      * For a node n give the cost in the ring of (n-1 to n) + (n to n + 1)
-     * @param node A node nothing to say
-     * @return Already said above
      */
     private int getAdjacentEdgesCostSum(int previousNode, int node, int nextNode) {
         // fromCost + toCost
@@ -123,36 +142,33 @@ public class Solution {
         return getRingEdgeCost(previousNode, node) + getRingEdgeCost(node, nextNode);
     }
 
+    /**
+     *  Returns true if the node is in the ring, false otherwise
+     */
     public boolean isStarNode(int node) {
         return !isRing[node - 1];
     }
 
-    public void setRing(ArrayList<Integer> ring) {
-        this.ring = ring;
-        for (Integer node : ring) {
-            isRing[node - 1] = true;
-        }
-        this.cost = -1;
-    }
-
+    /**
+     * Getter for the ring attribute.
+     * @return the ring of the solution
+     */
     public ArrayList<Integer> getRing() {
         return ring;
     }
 
+    /**
+     * Returns the number of nodes in the ring.
+     */
     public int ringSize() {
         return ring.size();
-    }
-
-    public boolean[] getIsRing() {
-        return isRing;
     }
 
     /**
      * If the stars places haven't been calculated, calculates them and return them
      * otherwise it will just return the star's place
-     * @return
      */
-    public ArrayList<Integer[]> getStar() {
+    public ArrayList<Integer[]>  getStar() {
         if (this.star == null) {
             calculateStarSolution();
         }
@@ -227,7 +243,7 @@ public class Solution {
                             ring.get(i),
                             ring.get(i + 1)
                     );
-                    if(costGain < bestCostGain) {
+                    if (costGain < bestCostGain) {
                         bestCostGain = costGain;
                         bestIndex = i;
                     }

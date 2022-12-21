@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 public class Grasp {
     private final double ALPHA;
-    private final int maxIterations;
 
     private final int[][] starCost;
 
@@ -20,6 +19,15 @@ public class Grasp {
         return starCost;
     }
 
+    /**
+     * Get method for the starOrdered attribute.
+     * <p>
+     * The star ordered is a matrix of tuple (cost, j) which are the costs of going from i to j in the star.
+     * It is ordered to have the cheapest cost at the beginning of the list so if we want to find the nearest node to i,
+     * we select the list at index i and take the first element that lies in the ring.
+     *
+     * @return The starOrdered.
+     */
     public ArrayList<ArrayList<Tuple<Integer>>> getStarOrdered() {
         return starOrdered;
     }
@@ -28,10 +36,16 @@ public class Grasp {
         return ringCost;
     }
 
-
-    public Grasp(int maxIter, double alpha, int[][] ringCost, int[][] starCost, int size) {
+    /**
+     * Main constructor of the grasp algorithm for the ring star problem.
+     *
+     * @param alpha    The alpha parameter.
+     * @param ringCost The cost matrix for the ring.
+     * @param starCost The cost matrix for the star.
+     * @param size     The size of the problem. (number of nodes)
+     */
+    public Grasp(double alpha, int[][] ringCost, int[][] starCost, int size) {
         this.ALPHA = alpha;
-        this.maxIterations = maxIter;
         this.starCost = starCost;
         this.ringCost = ringCost;
         this.SIZE = size;
@@ -46,31 +60,17 @@ public class Grasp {
         }
     }
 
-    public Solution findSolution() {
-        // Implement the grasp algorithm for the ring star problem
-        Solution bestSolution = new Solution(this);
-        int bestCost = Integer.MAX_VALUE;
-        for (int i = 0; i < maxIterations; i++) {
-            Solution solution = constructSolution(); // Construct a greedy randomised solution
-            Solution solution_local = localSearch(solution); // Recherche localement autour de la solution
-            int cost = solution_local.getCost();
-            if (cost < bestCost) {
-                bestCost = cost;
-                bestSolution = solution;
-                //System.out.println("Iteration " + i + " bestCost: " + bestSolution.getCost());
-            }
-
-
-        }
-        System.out.println("Best solution : " + bestSolution.getCost());
-        return bestSolution;
-
-    }
-
+    /**
+     * Find a solution to the ring star problem using the GRASP meta-heuristic.
+     *
+     * @param maxTime Time to run the algorithm (in ms)
+     * @return The best solution found.
+     * @see Solution
+     */
     public Solution findSolution(long maxTime) {
-        // TODO : problème avec le maxtime qui fait toujours 100000 itération.
         Instant start = Instant.now();
-        Solution bestSolution = constructSolution();
+        Solution bestSolution = new Solution(this);
+        ArrayList<Solution> solutions = new ArrayList<>();
         int j = 0;
         do {
             for (int i = 0; i < 100; i++) {
@@ -78,57 +78,44 @@ public class Grasp {
                 Solution solution = localSearch(constructSolution());
                 if (solution.getCost() < bestSolution.getCost()) {
                     bestSolution = solution;
+                    solutions.add(solution);
                     System.out.println("Iteration " + (i + j * 100) + " bestCost: " + bestSolution.getCost());
                 }
             }
             j++;
         } while (Instant.now().toEpochMilli() - start.toEpochMilli() < maxTime);
         System.out.println("maxIter = " + j * 100);
-        System.out.println("Best solution = " + bestSolution.getCost());
-        return bestSolution;
-
+        System.out.println("Best solution = " + solutions.stream().min(Solution::compareTo).get().getCost());
+        return solutions.stream().min(Solution::compareTo).get();
     }
 
 
     /**
-     * Heuristique permettant d'estimer le coût d'ajout d'un nœud à une solution.
-     * → voir explication de la construction du LCR (Liste des candidats restraints)
+     * Heuristic used to estimate the cost of adding a node to the ring.
+     * <p>
+     * We return the cost of adding the node at the best place of the ring.
      *
-     * @param node Le nœud à estimer
-     * @return Le coût estimé
+     * @param node The node to add.
+     * @return A table of size 2 containing the cost ([0]) and the index of the best place to add the node ([1]}.
      */
     public int[] estimation(int node, Solution solution) {
-        int[] minIncrement = minIncrement(node, solution);
-        //minIncrement[0] += (int) meanStar(node, solution);
-        return minIncrement;
+        return minIncrement(node, solution);
     }
 
-
-    public double meanStar(int node, Solution solution) {
-        double mean = 0;
-        int count = 0;
-        for (int i = 0; i < SIZE; i++) {
-            if (!solution.getIsRing()[i]) {
-                mean += starCost[node - 1][i];
-                count++;
-            }
-        }
-        return mean / count;
-
-    }
 
     /**
-     * Cherche le plus petit coût pour ajouter le nœud dans le cycle.
-     * (on veut trouver l'endroit où (dist_{before} + dist_{after}) est minimum.)
+     * Seek for the best place to add a node to the ring.
+     * The best place is where (dist_{left} + dist_{right}) is minimal.
+     * <p>
+     * Distance left (resp. right) is the distance between the node and the node on its "left" (resp. right) in the ring.
      *
-     * @param node Le nœud à ajouté (numéro du noeud pas l'indice dans le tableau)
-     * @return La valeur du plus petit coût ajouté
+     * @param node The node to add. (number of the node, not the index in the ring)
+     * @return A table of size 2 containing the cost ([0]) and the index of the best place to add the node ([1]}.
      */
     public int[] minIncrement(int node, Solution solution) {
-        // Implement the minIncrement function
         ArrayList<Integer> solutionRing = solution.getRing();
         int ringSize = solutionRing.size();
-        // On prend comme valeur initiale le coût de l'ajouter à la fin.
+        // The initial value is the cost of adding the node at the end of the ring.
         int rightIndex = 0;
         int leftIndex = ringSize - 1;
         int min = this.ringCost[node - 1][solutionRing.get(leftIndex) - 1]
@@ -140,32 +127,28 @@ public class Grasp {
             if (cost < min) {
                 min = cost;
                 rightIndex = (i + 1) % ringSize;
-                leftIndex = i;
-
             }
         }
 
-        // Utiliser ça ou alors on ajoute simplement à la fin ?
         return new int[]{min, rightIndex};
     }
 
     /**
-     * Construit la liste des candidats restreints (LCR)
+     * Build the Restricted Candidate List (RCL)
      *
-     * @param solution La solution en cours de construction
-     * @return La liste des candidats restreints
+     * @param solution The initial solution.
+     * @return The RCL which is a list of tuple (a, b) where a is the node and b is the index of the best place to add it.
      */
     public ArrayList<Tuple<Integer>> computeRestrictedCandidateList(Solution solution) {
-        // Parcourir chaque noeud du star et calculer son estimation.
         double min = Integer.MAX_VALUE;
         double max = Integer.MIN_VALUE;
 
         ArrayList<Triplet<Integer, Integer, Integer>> estimationList = new ArrayList<>();
-        // Contient les triplets (a, b, c) où a = le numéro du noeud et b = son estimation et c l'indice du noeud de droite dans le ring
+        // Contains the triplets (a, b, c) where a is the node, b is its estimation and c is the index of the best place to add it.
 
-        for (int i = 1; i < SIZE; i++) { // On commence à 1 parce que le premier noeud est toujours dans le ring (depot)
+        for (int i = 1; i < SIZE; i++) { // We start at 1 because 0 is the depot
             int node = i + 1;
-            if (solution.isStarNode(node)) { // On veut faire le test que sur les noeuds qui ne sont pas déjà dans le ring
+            if (solution.isStarNode(node)) { //If the node is already in the ring, we don't add it to the RCL
                 int[] estimation = estimation(node, solution);
                 estimationList.add(new Triplet<>(node, estimation[0], estimation[1]));
                 if (estimation[0] < min) {
@@ -180,17 +163,22 @@ public class Grasp {
         float maxBoundary = (float) (min + ALPHA * (max - min));
 
 
-        // Retourne le minIncrement max et min
-        return (ArrayList<Tuple<Integer>>) estimationList.stream().filter(triplet -> triplet.getValue1() <= maxBoundary)
-                .map(triplet -> new Tuple<>(triplet.getValue0(), triplet.getValue2())).collect(Collectors.toList());
-
+        // We keep only the nodes with an estimation lower than the maxBoundary.
+        return (ArrayList<Tuple<Integer>>) estimationList.stream()
+                .filter(triplet -> triplet.getValue1() <= maxBoundary)
+                .map(triplet -> new Tuple<>(triplet.getValue0(), triplet.getValue2()))
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Construct a solution using the GRASP meta-heuristic.
+     *
+     * @return The constructed solution.
+     */
     private Solution constructSolution() {
-        final int MaxIter = 50; // Nombre d'itérations maximum pour la construction de la solution
+        final int MaxIter = 50; // Number of iterations of the algorithm.
 
-        Solution bestSolution = new Solution(this);
-
+        Solution bestSolution = new Solution(this); // Initial solution with only the depot.
 
         for (int i = 0; i < MaxIter; i++) {
             Solution tmpSolution = new Solution(this);
@@ -200,7 +188,8 @@ public class Grasp {
                 if (restrictedCandidateList.isEmpty()) {
                     searching = false;
                 } else {
-                    // On a donc la liste de tuple (a, b) où a = le numéro du noeud et b l'indice du noeud de droite dans le ring.
+                    // We have the list of tuple (a, b) where a is the node and b the index of the best place to add it.
+                    // and we choose randomly a node in the RCL.
                     Tuple<Integer> node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
 
                     ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
@@ -211,8 +200,7 @@ public class Grasp {
                     }
                     Solution newSolution = new Solution(newRing, this);
 
-                    //Solution newS = new Solution(tmpSolution);
-                    //newS.addNodeToRing(node.getA(), node.getB()); node B needs to be the index of the node not the one on its right
+
                     if (newSolution.getCost() < tmpSolution.getCost()) {
                         tmpSolution = newSolution;
                     } else {
@@ -242,81 +230,43 @@ public class Grasp {
             }
         }
 
-
         return bestSolution;
     }
 
-    /**
-     * Movement:
-     * -add a node to the ring
-     * -remove a node from the ring
-     * -swap two node in the ring
-     *
-     * @param solution a solution
-     * @return Best neighbour if none is better, then the entered solution
-     */
+
     private Solution localSearch(Solution solution) {
-        for (Solution neighbour : solution.addNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
+        Solution bestNeighbour = solution;
+        do {
+            // in the case were we found a better neighbour in the previous loop cycle we change
+            // the current solution to that neighbour and repeat
+            if (bestNeighbour.getCost() < solution.getCost()) {
+                solution = bestNeighbour;
             }
 
-        }
-        for (Solution neighbour : solution.removeNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
-            }
-        }
-        for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
-            }
-        }
-        for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
-            }
-        }
-        return solution;
-    }
-
-
-    /*
-   private Solution localSearch(Solution solution) {
-        boolean searching = true;
-        Solution previousSolution = solution;
-        // TODO : prendre le minimum des 4 voisins
-        while (searching) {
             for (Solution neighbour : solution.addNodeNeighbourhood()) {
-                if (neighbour.getCost() < solution.getCost()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
                     solution = neighbour;
                 }
 
             }
             for (Solution neighbour : solution.removeNodeNeighbourhood()) {
-                if (neighbour.getCost() < solution.getCost()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
                     solution = neighbour;
                 }
             }
             for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
-                if (neighbour.getCost() < solution.getCost()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
                     solution = neighbour;
                 }
             }
             for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
-                if (neighbour.getCost() < solution.getCost()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
                     solution = neighbour;
                 }
             }
-            if (previousSolution.equals(solution)) {
-                searching = false;
-            } else {
-                previousSolution = solution;
-            }
-        }
+
+        } while (bestNeighbour.getCost() < solution.getCost());
+
         return solution;
     }
-     */
-
-
 }
