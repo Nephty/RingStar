@@ -11,9 +11,10 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         int maxTimeSeconds = 300;
-        String dataSet = "data2";
+        String dataSet = "data7";
         double alpha = 0.8;
-        runGrasp(maxTimeSeconds * 1000, dataSet, alpha);
+        //runGrasp(maxTimeSeconds * 1000, dataSet, alpha);
+        testAllSet(maxTimeSeconds, alpha);
     }
 
     /**
@@ -64,7 +65,7 @@ public class Main {
     public static void testAllSet(int timePerSet, double alpha) throws FileNotFoundException {
         StringBuilder bobTheBuilder = new StringBuilder();
         bobTheBuilder.append("Running GRASP on all datasets for ").append(timePerSet).append("s").append(" with alpha = ").append(alpha).append("\n");
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 9; i++) {
             bobTheBuilder.append("Dataset ").append(i).append(" : \n")
                     .append("Teacher value : ").append(teacherValues[i - 1])
                     .append(" (ring = ").append(teacherRing[i - 1]).append("%)\n");
@@ -80,12 +81,16 @@ public class Main {
             );
             Solution solution = grasp.findSolution(timePerSet * 1000);
 
-            bobTheBuilder.append("Our value : ").append(solution.getCost())
+            double dif = (double) solution.getCost() - teacherValues[i - 1];
+            double difference = Math.abs(dif)
+                    / (solution.getCost() + teacherValues[i - 1]) / 2;
+            bobTheBuilder.append("Our value : ").append(solution.getCost()).append("\n Difference : ")
+                    .append(String.valueOf(difference*100)).append("\n")
                     .append("\n \n");
             //Save
             String filename = "grasp/src/main/results/data" + i + ".txt";
             saveFile(filename, solution.toString());
         }
-        saveFile("grasp/src/main/results/all3.txt", bobTheBuilder.toString());
+        saveFile("grasp/src/main/results/all4.txt", bobTheBuilder.toString());
     }
 }
