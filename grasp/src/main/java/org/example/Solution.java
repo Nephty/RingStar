@@ -101,6 +101,12 @@ public class Solution {
         return cost;
     }
 
+    /**
+     * Returns the cost to go from nodeA to nodeB. The cost is the ring cost
+     * @param nodeA
+     * @param nodeB
+     * @return
+     */
     public int getRingEdgeCost(int nodeA, int nodeB) {
         return GRASP.getRingCost()[nodeA - 1][nodeB - 1];
     }
@@ -141,6 +147,11 @@ public class Solution {
         return isRing;
     }
 
+    /**
+     * If the stars places haven't been calculated, calculates them and return them
+     * otherwise it will just return the star's place
+     * @return
+     */
     public ArrayList<Integer[]> getStar() {
         if (this.star == null) {
             calculateStarSolution();
@@ -150,6 +161,13 @@ public class Solution {
 
     //-----------------------------------------------------------------------------------------//
     //NeighbourHood methods
+
+    /**
+     * Returns the neighbours of this solution using the movement of adding a node to the ring
+     * Checks for the best place to put a starNode by looking at the difference between the ring node's edges cost
+     * and the star node's edges cost if it were to be in the ring node's place.
+     * @return Array of solution containing the neighbours
+     */
     public Solution[] addNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[GRASP.SIZE - ring.size()];
         int k = 0;
@@ -180,6 +198,14 @@ public class Solution {
         return neighbourhood;
     }
 
+    /**
+     * Returns the neighbours of this solution using the movement of removing a ring node
+     * and put a star node in its stead.
+     * It will check the best position to put a starNode by looking at the difference between the ring node's edges cost
+     * and the star node's edges cost if it were to be in the ring node's place. Doesn't take into account the starCost
+     * the ring node would add to the solution
+     * @return Array of solution containing the neighbours
+     */
     public Solution[] swapStarRingNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[GRASP.SIZE - ring.size()];
         int k = 0;
@@ -217,6 +243,10 @@ public class Solution {
         return neighbourhood;
     }
 
+    /**
+     * Returns the neighbours of this solution using the movement of removing a node from the ring
+     * @return Array of solution containing the neighbours
+     */
     public Solution[] removeNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[ring.size()];
         for (int i = 0; i < ring.size(); i++) {
@@ -227,6 +257,10 @@ public class Solution {
         return neighbourhood;
     }
 
+    /**
+     * Returns the neighbours of this solution using the movement of swapping two ring nodes places
+     * @return Array of solution containing the neighbours
+     */
     public Solution[] swapRingNodeNeighbourhood() {
         Solution[] neighbourhood = new Solution[ring.size()];
         for (int i = 0; i < ring.size(); i++) {
@@ -235,27 +269,48 @@ public class Solution {
             neighbourhood[i] = neighbour;
         }
         return neighbourhood;
-        //TODO fix redundant solution problem
     }
 
+    /**
+     * Add a star node to the ring
+     * @param node Star node to be added
+     * @param index index in the ring to insert it
+     */
     public void addNodeToRing(int node, int index) {
         this.ring.add(index, node);
         this.isRing[node - 1] = true;
         this.cost = -1;
+        this.star = null;
     }
 
+    /**
+     * Swap a star node and a ring node
+     * @param node Star node to be put in the ring
+     * @param index Index of the ring node to remove
+     */
     private void swapNodeToRing(int node, int index) {
         this.isRing[ring.get(index) - 1] = false;
         this.isRing[node - 1] = true;
         this.ring.set(index, node);
+        this.star = null;
     }
 
+    /**
+     * Remove a node from the ring
+     * @param index Index of the node to be removed
+     */
     private void removeRingNode(int index) {
         this.isRing[this.ring.get(index) - 1] = false;
         this.ring.remove(index);
         this.cost = -1;
+        this.star = null;
     }
 
+    /**
+     * Swap two node in the ring
+     * @param index Index of the node to be swapped
+     *              This node will be swapped with the one preceding it
+     */
     private void swapRingNode(int index) {
         if (index == 0) {
             int temp = this.ring.get(this.ring.size() - 1);
@@ -268,5 +323,4 @@ public class Solution {
         }
         this.cost = -1;
     }
-    //TODO Make sure the starList doesn't get outdated
 }
