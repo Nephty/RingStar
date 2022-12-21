@@ -22,7 +22,7 @@ public class Main {
 
         int maxTimeSeconds = 120;
         String dataSet = "data1";
-        runGrasp(maxTimeSeconds*1000,dataSet);
+        runGrasp(maxTimeSeconds*1000, dataSet);
         /*
         for (double i = 0; i <= 0.35 ; i += 0.1) {
             tryAlpha(i, 5000);

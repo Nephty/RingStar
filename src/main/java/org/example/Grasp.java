@@ -261,27 +261,38 @@ public class Grasp {
      * @return Best neighbour if none is better, then the entered solution
      */
     private Solution localSearch(Solution solution) {
-        for (Solution neighbour : solution.addNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
+        Solution bestNeighbour = solution;
+        do {
+            // in the case were we found a better neighbour in the previous loop cycle we change
+            // the current solution to that neighbour and repeat
+            if(bestNeighbour.getCost() < solution.getCost()) {
+                solution = bestNeighbour;
             }
 
-        }
-        for (Solution neighbour : solution.removeNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
+            for (Solution neighbour : solution.addNodeNeighbourhood()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
+                    solution = neighbour;
+                }
+
             }
-        }
-        for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
+            for (Solution neighbour : solution.removeNodeNeighbourhood()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
+                    solution = neighbour;
+                }
             }
-        }
-        for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
-            if (neighbour.getCost() < solution.getCost()) {
-                solution = neighbour;
+            for (Solution neighbour : solution.swapRingNodeNeighbourhood()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
+                    solution = neighbour;
+                }
             }
-        }
+            for (Solution neighbour : solution.swapStarRingNodeNeighbourhood()) {
+                if (neighbour.getCost() < bestNeighbour.getCost()) {
+                    solution = neighbour;
+                }
+            }
+
+        } while(bestNeighbour.getCost() < solution.getCost());
+
         return solution;
     }
 
