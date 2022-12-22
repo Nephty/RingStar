@@ -11,10 +11,10 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         int maxTimeSeconds = 300;
-        String dataSet = "data7";
-        double alpha = 0.8;
-        //runGrasp(maxTimeSeconds * 1000, dataSet, alpha);
-        testAllSet(maxTimeSeconds, alpha);
+        String dataSet = "data4";
+        double alpha = 0.6;
+        runGrasp(maxTimeSeconds * 1000, dataSet, alpha);
+        //testAllSet(maxTimeSeconds, alpha);
     }
 
     /**

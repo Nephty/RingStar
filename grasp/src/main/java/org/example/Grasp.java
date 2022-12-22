@@ -176,61 +176,54 @@ public class Grasp {
      * @return The constructed solution.
      */
     private Solution constructSolution() {
-        final int MaxIter = 25; // Number of solutions to try before returning the best one.
 
-        Solution bestSolution = new Solution(this); // Initial solution with only the depot.
 
-        for (int i = 0; i < MaxIter; i++) {
-            Solution tmpSolution = new Solution(this);
-            boolean searching = true;
-            while (searching) {
-                ArrayList<Tuple<Integer>> restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
-                if (restrictedCandidateList.isEmpty()) {
-                    searching = false;
+        Solution tmpSolution = new Solution(this);
+        boolean searching = true;
+        while (searching) {
+            ArrayList<Tuple<Integer>> restrictedCandidateList = computeRestrictedCandidateList(tmpSolution);
+            if (restrictedCandidateList.isEmpty()) {
+                searching = false;
+            } else {
+                // We have the list of tuple (a, b) where a is the node and b the index of the best place to add it.
+                // and we choose randomly a node in the RCL.
+                Tuple<Integer> node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
+
+                ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
+                if (node.getB() == 0) {
+                    newRing.add(node.getA());
                 } else {
-                    // We have the list of tuple (a, b) where a is the node and b the index of the best place to add it.
-                    // and we choose randomly a node in the RCL.
-                    Tuple<Integer> node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
+                    newRing.add(node.getB(), node.getA());
+                }
+                Solution newSolution = new Solution(newRing, this);
 
-                    ArrayList<Integer> newRing = new ArrayList<>(tmpSolution.getRing());
-                    if (node.getB() == 0) {
-                        newRing.add(node.getA());
-                    } else {
-                        newRing.add(node.getB(), node.getA());
+
+                if (newSolution.getCost() < tmpSolution.getCost()) {
+                    tmpSolution = newSolution;
+                } else {
+                    while (restrictedCandidateList.size() > 1 && newSolution.getCost() > tmpSolution.getCost()) {
+                        restrictedCandidateList.remove(node);
+                        node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
+                        newRing = new ArrayList<>(tmpSolution.getRing());
+                        if (node.getB() == 0) {
+                            newRing.add(node.getA());
+                        } else {
+                            newRing.add(node.getB(), node.getA());
+                        }
+                        newSolution = new Solution(newRing, this);
+
                     }
-                    Solution newSolution = new Solution(newRing, this);
-
-
                     if (newSolution.getCost() < tmpSolution.getCost()) {
                         tmpSolution = newSolution;
                     } else {
-                        while (restrictedCandidateList.size() > 1 && newSolution.getCost() > tmpSolution.getCost()) {
-                            restrictedCandidateList.remove(node);
-                            node = restrictedCandidateList.get((int) (Math.random() * restrictedCandidateList.size()));
-                            newRing = new ArrayList<>(tmpSolution.getRing());
-                            if (node.getB() == 0) {
-                                newRing.add(node.getA());
-                            } else {
-                                newRing.add(node.getB(), node.getA());
-                            }
-                            newSolution = new Solution(newRing, this);
-
-                        }
-                        if (newSolution.getCost() < tmpSolution.getCost()) {
-                            tmpSolution = newSolution;
-                        } else {
-                            searching = false;
-                        }
+                        searching = false;
                     }
                 }
             }
-
-            if (tmpSolution.getCost() < bestSolution.getCost()) {
-                bestSolution = tmpSolution;
-            }
         }
 
-        return bestSolution;
+
+        return tmpSolution;
     }
 
     /**
