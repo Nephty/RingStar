@@ -27,7 +27,7 @@ public class Main {
      */
     public static void runGrasp(int maxTime, String dataSet, double alpha) throws FileNotFoundException {
         System.out.println("Running GRASP on " + dataSet + " for " + maxTime / 1000 + "s");
-        MatrixReader matrixReader = new MatrixReader("grasp/src/main/resources/" + dataSet + ".dat");
+        MatrixReader matrixReader = new MatrixReader("src/main/resources/" + dataSet + ".dat");
         matrixReader.matrixRead();
         Grasp grasp = new Grasp(
                 alpha,
@@ -39,7 +39,7 @@ public class Main {
         System.out.println(solution);
 
         //Save
-        String filename = "grasp/src/main/results/" + dataSet + ".txt";
+        String filename = "src/main/results/" + dataSet + ".txt";
         saveFile(filename, solution.toString());
     }
 
