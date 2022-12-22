@@ -10,7 +10,7 @@ public class Main {
     public static final double[] teacherRing = {100, 33.33, 11.76, 100, 42.11, 15.79, 100, 55, 21};
 
     public static void main(String[] args) throws FileNotFoundException {
-        int maxTimeSeconds = 300;
+        int maxTimeSeconds = 10;
         String dataSet = "data4";
         double alpha = 0.6;
         runGrasp(maxTimeSeconds * 1000, dataSet, alpha);
